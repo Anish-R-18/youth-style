@@ -705,7 +705,9 @@ document.addEventListener('DOMContentLoaded', () => {
             `• Advance Paid: ₹${record.addAmount || '0'}`,
             `• Balance Due: ${isPaid ? '✓ Paid in Full' : `₹${record.balance || '0'}`}`,
             '',
-            `Thank you for visiting Suresh's Youth Style Stitch Wear!`
+            `✦ Every Stitch Tells Your Story ✦`,
+            `Your Style. Your Confidence. Your Moment.`,
+            `“Thank you for choosing Suresh’s Youth Style Stitch Wear. We’re happy to be a part of your style journey!”`
         );
         return lines.join('\n');
     }
@@ -848,9 +850,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <!-- Footer -->
                 <div class="pb-footer">
-                    <div class="pb-footer-badge">✓ Perfect Fit &bull; Quality Tailoring Guaranteed</div>
-                    <p class="pb-footer-msg">Thank you for visiting Suresh's Youth Style Stitch Wear!</p>
-                    <p class="pb-footer-note">Please bring this slip during delivery collection.</p>
+                    <div class="pb-footer-motto">✦ Every Stitch Tells Your Story ✦</div>
+                    <div class="pb-footer-tagline">Your Style. Your Confidence. Your Moment.</div>
+                    <p class="pb-footer-appreciation">“Thank you for choosing Suresh’s Youth Style Stitch Wear. We’re happy to be a part of your style journey!”</p>
                 </div>
             </div>
         `;
@@ -1025,6 +1027,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="measurement-card">
                 <div class="measurement-card-title">🧵 Others / Special Instructions</div>
                 <div class="measurement-card-content">${record.others ? escapeHTML(record.others) : '<em>No additional items or instructions</em>'}</div>
+            </div>
+
+            <div class="slip-bottom-signature">
+                <div class="slip-bottom-motto">✦ Every Stitch Tells Your Story ✦</div>
+                <div class="slip-bottom-tagline">Your Style. Your Confidence. Your Moment.</div>
+                <p class="slip-bottom-appreciation">“Thank you for choosing Suresh’s Youth Style Stitch Wear. We’re happy to be a part of your style journey!”</p>
             </div>
         `;
 
