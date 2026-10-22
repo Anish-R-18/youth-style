@@ -596,7 +596,6 @@ ${record.deliveryDate ? `Delivery Date: ${formatDate(record.deliveryDate)}` : ''
 • Advance Paid: ₹${record.addAmount || '0'}
 • Balance Due: ₹${record.balance || '0'}
 
-${record.shirt ? `*Shirt:* ${record.shirt}\n` : ''}${record.pant ? `*Pant:* ${record.pant}\n` : ''}${record.others ? `*Notes:* ${record.others}\n` : ''}
 Thank you for visiting Suresh's Youth Style Stitch Wear!`;
 
         const cleanPhone = record.phone.replace(/[^0-9]/g, '');

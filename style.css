@@ -1,3 +1,12 @@
+/* Exact President Font Definition */
+@font-face {
+    font-family: 'President';
+    src: url('fonts/President-Script.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --bg-color: #0b1120;
     --panel-bg: rgba(22, 30, 49, 0.78);
@@ -115,16 +124,16 @@ body {
     text-shadow: 0 2px 10px rgba(251, 191, 36, 0.2);
 }
 
-/* Youth Style Stitch Wear in President / Regal Cinzel font */
+/* Youth Style Stitch Wear in exact President font */
 .brand-main {
-    font-family: 'Cinzel', serif;
-    font-size: 1.35rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #ffffff 100%);
+    font-family: 'President', cursive, sans-serif;
+    font-size: 1.85rem;
+    font-weight: normal;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #60a5fa 0%, #c084fc 50%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    text-transform: none;
 }
 
 .brand-subtitle {
@@ -1252,10 +1261,10 @@ input:focus, textarea:focus {
         color: #0f172a !important;
     }
     .slip-print-title-main {
-        font-family: 'Cinzel', serif !important;
-        font-size: 1.3rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.05em !important;
+        font-family: 'President', cursive, sans-serif !important;
+        font-size: 1.6rem !important;
+        font-weight: normal !important;
+        letter-spacing: 0.02em !important;
         color: #0f172a !important;
     }
 
