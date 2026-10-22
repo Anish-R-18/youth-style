@@ -7,12 +7,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Youth Style">
-    <meta name="description" content="Youth Style - Smart tailoring job cards, measurements & balance tracker">
-    <title>Youth Style - Tailor Manager</title>
+    <meta name="description" content="Suresh's Youth Style Stitch Wear - Tailor Job Cards & Accounts">
+    <title>Suresh's Youth Style Stitch Wear</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-layout">
@@ -21,9 +21,12 @@
             <div class="header-main">
                 <div class="brand">
                     <span class="brand-icon">✂️</span>
-                    <div>
-                        <h1 class="brand-title">Youth Style</h1>
-                        <p class="brand-subtitle">Tailor Job Cards & Accounts</p>
+                    <div class="brand-text-group">
+                        <h1 class="brand-title">
+                            <span class="brand-prefix">Suresh's</span>
+                            <span class="brand-main">Youth Style Stitch Wear</span>
+                        </h1>
+                        <p class="brand-subtitle">Smart Tailoring Job Cards & Accounts</p>
                     </div>
                 </div>
                 <div class="header-stats">
@@ -183,21 +186,21 @@
                         </div>
                     </div>
 
-                    <!-- Payment Section -->
+                    <!-- Payment Section: Total Amount first, Advance second, Balance third -->
                     <div class="form-fieldset">
                         <legend class="fieldset-title">💰 Payment & Billing</legend>
                         <div class="form-grid-3">
+                            <div class="form-group">
+                                <label for="totalAmount">Total Amount (₹) <span class="req">*</span></label>
+                                <input type="number" id="totalAmount" placeholder="e.g. 800" inputmode="decimal">
+                            </div>
                             <div class="form-group">
                                 <label for="addAmount">Advance / Add (₹)</label>
                                 <input type="number" id="addAmount" placeholder="e.g. 500" inputmode="decimal">
                             </div>
                             <div class="form-group">
                                 <label for="balance">Balance Due (₹)</label>
-                                <input type="number" id="balance" placeholder="e.g. 300" inputmode="decimal">
-                            </div>
-                            <div class="form-group">
-                                <label for="totalAmount">Total Amount (₹)</label>
-                                <input type="number" id="totalAmount" placeholder="Adv + Bal" inputmode="decimal">
+                                <input type="number" id="balance" placeholder="Total - Advance" inputmode="decimal">
                             </div>
                         </div>
                     </div>
@@ -239,11 +242,35 @@
                         <span>💬 WhatsApp</span>
                     </button>
                     <button type="button" id="modal-print-btn" class="btn-secondary">
-                        <span>🖨️ Print Slip</span>
+                        <span>🖨️ Print / PDF</span>
                     </button>
                     <button type="button" id="modal-paid-btn" class="btn-success">
                         <span>✔️ Mark Paid</span>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print PDF Choice Dialog Modal -->
+        <div id="print-choice-backdrop" class="modal-backdrop hidden">
+            <div class="modal delete-modal glass-panel" role="dialog" aria-modal="true">
+                <div class="delete-modal-content">
+                    <div class="delete-icon" style="color:#a78bfa;">🖨️</div>
+                    <h3>Print / Save PDF Slip</h3>
+                    <p class="delete-desc" id="print-choice-desc">Select how you want to print or save the customer slip:</p>
+                    <div class="print-options-grid">
+                        <button type="button" id="print-with-measurements-btn" class="btn-primary" style="min-height:48px; font-size:0.95rem;">
+                            <span>📏 With Measurements</span>
+                            <small style="display:block; font-size:0.75rem; opacity:0.85; font-weight:normal;">Full Job Card (Tailor & Master copy)</small>
+                        </button>
+                        <button type="button" id="print-without-measurements-btn" class="btn-secondary" style="min-height:48px; font-size:0.95rem; border-color:rgba(99,102,241,0.4); color:#c7d2fe;">
+                            <span>🧾 Without Measurements</span>
+                            <small style="display:block; font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Bill & Balance Receipt only (Customer copy)</small>
+                        </button>
+                        <button type="button" id="print-cancel-btn" class="btn-secondary" style="min-height:42px; font-size:0.9rem;">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

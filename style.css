@@ -88,19 +88,56 @@ body {
     height: 46px;
 }
 
+.brand-text-group {
+    display: flex;
+    flex-direction: column;
+}
+
 .brand-title {
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.45rem;
+    line-height: 1.15;
+    margin-bottom: 0.15rem;
+}
+
+/* Suresh's in stylish Brush font */
+.brand-prefix {
+    font-family: 'Alex Brush', cursive, sans-serif;
+    font-size: 2.1rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #fbbf24 0%, #f472b6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    line-height: 1.2;
+    padding-right: 0.15rem;
+    text-shadow: 0 2px 10px rgba(251, 191, 36, 0.2);
+}
+
+/* Youth Style Stitch Wear in President / Regal Cinzel font */
+.brand-main {
+    font-family: 'Cinzel', serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .brand-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
     color: var(--text-muted);
+}
+
+.print-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
 }
 
 .header-stats {
@@ -1167,26 +1204,63 @@ input:focus, textarea:focus {
     #modal-backdrop {
         position: absolute;
         inset: 0;
-        background: white;
-        padding: 0;
+        background: white !important;
+        padding: 0 !important;
     }
     .modal {
-        background: white;
-        color: black;
-        border: none;
-        box-shadow: none;
-        width: 100%;
-        max-width: 100%;
+        background: white !important;
+        color: black !important;
+        border: none !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1.5rem !important;
     }
     .modal-close-btn, .modal-footer {
         display: none !important;
     }
-    .measurement-card-content, .slip-detail-grid {
-        background: #f1f5f9;
-        color: black;
-        border: 1px solid #cbd5e1;
+    .slip-detail-grid {
+        background: #f8fafc !important;
+        color: black !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .measurement-card {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .measurement-card-title {
+        color: #1e293b !important;
+    }
+    .measurement-card-content {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
     }
     .slip-val, .customer-name {
-        color: black;
+        color: black !important;
+    }
+    .slip-print-header {
+        display: block !important;
+        text-align: center;
+        border-bottom: 2px dashed #94a3b8;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    .slip-print-title-prefix {
+        font-family: 'Alex Brush', cursive, sans-serif !important;
+        font-size: 2rem !important;
+        color: #0f172a !important;
+    }
+    .slip-print-title-main {
+        font-family: 'Cinzel', serif !important;
+        font-size: 1.3rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.05em !important;
+        color: #0f172a !important;
+    }
+
+    /* When printing Without Measurements, hide measurement sections */
+    body.hide-measurements-on-print .measurement-card {
+        display: none !important;
     }
 }

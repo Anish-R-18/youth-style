@@ -58,6 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const importReplaceBtn = document.getElementById('import-replace-btn');
     const importCancelBtn = document.getElementById('import-cancel-btn');
 
+    // Print / PDF Choice Dialog elements
+    const printChoiceBackdrop = document.getElementById('print-choice-backdrop');
+    const printWithMeasurementsBtn = document.getElementById('print-with-measurements-btn');
+    const printWithoutMeasurementsBtn = document.getElementById('print-without-measurements-btn');
+    const printCancelBtn = document.getElementById('print-cancel-btn');
+
     let currentViewingId = null;
     let editingOrderId = null;
     let pendingDeleteRecord = null;
@@ -81,17 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
         date: r.date || new Date().toLocaleDateString()
     }));
 
-    // Auto-compute Total = Balance + Advance
-    function autoCalcTotal() {
+    // Auto-compute Balance = Total Amount - Advance
+    function autoCalcBalance() {
+        const totNum = parseNumeric(totalAmountInput.value);
         const advNum = parseNumeric(addAmountInput.value);
-        const balNum = parseNumeric(balanceInput.value);
-        if (addAmountInput.value.trim() !== '' || balanceInput.value.trim() !== '') {
-            totalAmountInput.value = (advNum + balNum).toString();
+
+        if (totalAmountInput.value.trim() !== '') {
+            const bal = Math.max(0, totNum - advNum);
+            balanceInput.value = bal.toString();
         }
     }
 
-    addAmountInput.addEventListener('input', autoCalcTotal);
-    balanceInput.addEventListener('input', autoCalcTotal);
+    totalAmountInput.addEventListener('input', autoCalcBalance);
+    addAmountInput.addEventListener('input', autoCalcBalance);
 
     // Initial render
     updateStats();
@@ -518,14 +526,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            if (!modalBackdrop.classList.contains('hidden')) closeModal();
+            if (!printChoiceBackdrop.classList.contains('hidden')) closePrintChoiceModal();
+            else if (!modalBackdrop.classList.contains('hidden')) closeModal();
             if (!deleteModalBackdrop.classList.contains('hidden')) closeDeleteModal();
             if (!importModalBackdrop.classList.contains('hidden')) closeImportModal();
         }
     });
 
+    // Print Button opens choice modal (With Measurements, Without Measurements, Cancel)
     modalPrintBtn.addEventListener('click', () => {
+        openPrintChoiceModal();
+    });
+
+    function openPrintChoiceModal() {
+        printChoiceBackdrop.classList.remove('hidden');
+    }
+
+    function closePrintChoiceModal() {
+        printChoiceBackdrop.classList.add('hidden');
+    }
+
+    printCancelBtn.addEventListener('click', closePrintChoiceModal);
+    printChoiceBackdrop.addEventListener('click', (e) => {
+        if (e.target === printChoiceBackdrop) closePrintChoiceModal();
+    });
+
+    printWithMeasurementsBtn.addEventListener('click', () => {
+        closePrintChoiceModal();
+        document.body.classList.remove('hide-measurements-on-print');
         window.print();
+    });
+
+    printWithoutMeasurementsBtn.addEventListener('click', () => {
+        closePrintChoiceModal();
+        document.body.classList.add('hide-measurements-on-print');
+        window.print();
+        // Remove class after print dialog closes
+        setTimeout(() => {
+            document.body.classList.remove('hide-measurements-on-print');
+        }, 1000);
     });
 
     modalPaidBtn.addEventListener('click', () => {
@@ -533,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = records.find(r => r.id === currentViewingId);
         if (target) {
             target.balance = '0';
-            target.totalAmount = computeTotal(target.addAmount, target.balance);
             saveRecords();
             updateStats();
             renderAllViews();
@@ -548,18 +586,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!record) return;
 
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
-        const text = `*Youth Style - Tailor Order Slip* ✂️
+        const text = `*Suresh's Youth Style Stitch Wear* ✂️
 Order #: ${record.orderId}
 Customer: ${record.name}
 ${record.deliveryDate ? `Delivery Date: ${formatDate(record.deliveryDate)}` : ''}
 
 *Payment Details:*
-• Total: ₹${totalDisplay}
+• Total Amount: ₹${totalDisplay}
 • Advance Paid: ₹${record.addAmount || '0'}
 • Balance Due: ₹${record.balance || '0'}
 
 ${record.shirt ? `*Shirt:* ${record.shirt}\n` : ''}${record.pant ? `*Pant:* ${record.pant}\n` : ''}${record.others ? `*Notes:* ${record.others}\n` : ''}
-Thank you for choosing Youth Style!`;
+Thank you for visiting Suresh's Youth Style Stitch Wear!`;
 
         const cleanPhone = record.phone.replace(/[^0-9]/g, '');
         const waUrl = cleanPhone.length >= 10
@@ -582,6 +620,12 @@ Thank you for choosing Youth Style!`;
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
 
         modalContent.innerHTML = `
+            <div class="slip-print-header" style="display:none;">
+                <span class="slip-print-title-prefix">Suresh's</span><br>
+                <span class="slip-print-title-main">Youth Style Stitch Wear</span>
+                <p style="font-size:0.75rem; color:#475569; margin-top:2px;">Tailoring Job Card & Bill Receipt</p>
+            </div>
+
             <div class="slip-detail-grid">
                 <div class="slip-detail-item">
                     <span class="slip-label">Total Bill</span>
