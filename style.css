@@ -1642,16 +1642,16 @@ input:focus, textarea:focus {
 .pdf-bill .pb-section-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 24px 0 10px;
+    gap: 10px;
+    margin: 28px 0 14px;
 }
 
 .pdf-bill .pb-sec-icon {
-    font-size: 18px;
+    font-size: 19px;
 }
 
 .pdf-bill .pb-sec-title {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -1660,13 +1660,15 @@ input:focus, textarea:focus {
 
 .pdf-bill .pb-sec-badge {
     margin-left: auto;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
+    letter-spacing: 0.04em;
     background: #ede9fe;
     color: #5b21b6;
     border: 1px solid #ddd6fe;
-    padding: 3px 10px;
+    padding: 5px 14px;
     border-radius: 20px;
+    white-space: nowrap;
 }
 
 .pdf-bill .pb-table {
@@ -1683,7 +1685,7 @@ input:focus, textarea:focus {
 .pdf-bill .pb-table th {
     background: #f5f3ff;
     color: #4f46e5;
-    padding: 10px 14px;
+    padding: 12px 18px;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1692,10 +1694,11 @@ input:focus, textarea:focus {
 }
 
 .pdf-bill .pb-table td {
-    padding: 10px 14px;
+    padding: 12px 18px;
     background: #ffffff;
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
+    line-height: 1.45;
 }
 
 .pdf-bill .pb-table tbody tr:nth-child(even) td {
@@ -1705,6 +1708,7 @@ input:focus, textarea:focus {
 .pdf-bill .pb-item-name {
     font-weight: 600;
     color: #1e293b;
+    padding-left: 4px;
 }
 
 .pdf-bill .pb-table .pb-c {
@@ -1715,33 +1719,111 @@ input:focus, textarea:focus {
 .pdf-bill .pb-count-val {
     color: #4338ca;
     font-size: 15px;
+    font-weight: 800;
 }
 
 .pdf-bill .pb-table .pb-sum td {
     background: #f5f3ff;
     color: #3730a3;
     font-weight: 800;
+    border-top: 1.5px solid #ddd6fe;
     border-bottom: none;
-    font-size: 13px;
+    font-size: 13.5px;
+    padding: 14px 20px;
+}
+
+.pdf-bill .pb-table .pb-sum-label {
+    text-align: right;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #4338ca;
+    padding-right: 24px;
+}
+
+.pdf-bill .pb-table .pb-sum-val {
+    font-size: 16px;
+    font-weight: 900;
+    color: #4338ca;
+    letter-spacing: 0.04em;
+    background: rgba(221, 214, 254, 0.45);
+    border-radius: 6px;
+    padding: 4px 12px;
 }
 
 .pdf-bill .pb-table .pb-empty {
     text-align: center;
     color: #94a3b8;
-    padding: 18px;
+    padding: 22px;
     font-style: italic;
+}
+
+/* Garment Measurements Section (Used when With Measurements is printed) */
+.pdf-bill .pb-measurements-section {
+    margin-top: 16px;
+}
+
+.pdf-bill .pb-meas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.pdf-bill .pb-meas-box {
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid #e2e8f0;
+}
+
+.pdf-bill .pb-box-shirt {
+    background: #f0f9ff;
+    border-color: #bae6fd;
+}
+.pdf-bill .pb-box-shirt .pb-meas-title { color: #0284c7; }
+
+.pdf-bill .pb-box-pant {
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+}
+.pdf-bill .pb-box-pant .pb-meas-title { color: #4f46e5; }
+
+.pdf-bill .pb-box-others {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+.pdf-bill .pb-box-others .pb-meas-title { color: #b45309; }
+
+.pdf-bill .pb-meas-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.pdf-bill .pb-meas-content {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #1e293b;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    min-height: 54px;
 }
 
 .pdf-bill .pb-totals {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 22px;
+    gap: 16px;
+    margin-top: 28px;
 }
 
 .pdf-bill .pb-total-box {
     border-radius: 14px;
-    padding: 14px 12px;
+    padding: 16px 14px;
     text-align: center;
 }
 
@@ -1861,86 +1943,63 @@ input:focus, textarea:focus {
     }
 }
 
-/* Print Styles */
+/* Print Stage container hidden on normal screen */
+.print-stage {
+    display: none;
+}
+
+/* Print Styles: Identical luxury pastel format & colors as WhatsApp PDF */
 @media print {
-    body * {
-        visibility: hidden;
-    }
-    #modal-backdrop, #modal-backdrop * {
-        visibility: visible;
-    }
-    #modal-backdrop {
-        position: absolute;
-        inset: 0;
-        background: white !important;
-        padding: 0 !important;
-    }
-    .modal {
-        background: white !important;
-        color: black !important;
-        border: none !important;
-        box-shadow: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 1.5rem !important;
-    }
-    .modal-close-btn, .modal-footer {
-        display: none !important;
-    }
-    .slip-detail-grid {
-        background: #f8fafc !important;
-        color: black !important;
-        border: 1px solid #cbd5e1 !important;
-    }
-    .measurement-card, .particulars-card {
-        background: #f8fafc !important;
-        border: 1px solid #cbd5e1 !important;
-    }
-    .particulars-lines {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-    }
-    .particular-line, .particular-line strong {
-        color: #0f172a !important;
-    }
-    .particulars-count-chip {
-        color: #0f766e !important;
-        background: #ccfbf1 !important;
-        border-color: #99f6e4 !important;
-    }
-    .measurement-card-title {
-        color: #1e293b !important;
-    }
-    .measurement-card-content {
-        background: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #e2e8f0 !important;
-    }
-    .slip-val, .customer-name {
-        color: black !important;
-    }
-    .slip-print-header {
-        display: block !important;
-        text-align: center;
-        border-bottom: 2px dashed #94a3b8;
-        padding-bottom: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    .slip-print-title-prefix {
-        font-family: 'Alex Brush', cursive, sans-serif !important;
-        font-size: 2rem !important;
-        color: #0f172a !important;
-    }
-    .slip-print-title-main {
-        font-family: 'President', cursive, sans-serif !important;
-        font-size: 1.6rem !important;
-        font-weight: normal !important;
-        letter-spacing: 0.02em !important;
-        color: #0f172a !important;
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
     }
 
-    /* When printing Without Measurements, hide measurement sections */
-    body.hide-measurements-on-print .measurement-card {
-        display: none !important;
+    html, body {
+        background: #ffffff !important;
+        color: #1e293b !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Hide everything on screen except print stage */
+    body * {
+        visibility: hidden !important;
+    }
+
+    #print-stage, #print-stage * {
+        visibility: visible !important;
+    }
+
+    #print-stage {
+        display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+    }
+
+    #print-stage .pdf-bill {
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+    #print-stage .pb-card {
+        border: 1.5px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
     }
 }

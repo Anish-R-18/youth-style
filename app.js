@@ -649,20 +649,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === printChoiceBackdrop) closePrintChoiceModal();
     });
 
+    function printRecordSlip(record, withMeasurements) {
+        let stage = document.getElementById('print-stage');
+        if (!stage) {
+            stage = document.createElement('div');
+            stage.id = 'print-stage';
+            stage.className = 'print-stage';
+            document.body.appendChild(stage);
+        }
+
+        stage.innerHTML = '';
+        const bill = buildBillElement(record, withMeasurements);
+        stage.appendChild(bill);
+
+        setTimeout(() => {
+            window.print();
+        }, 150);
+    }
+
     printWithMeasurementsBtn.addEventListener('click', () => {
         closePrintChoiceModal();
-        document.body.classList.remove('hide-measurements-on-print');
-        window.print();
+        if (!currentViewingId) return;
+        const record = records.find(r => r.id === currentViewingId);
+        if (!record) return;
+        printRecordSlip(record, true);
     });
 
     printWithoutMeasurementsBtn.addEventListener('click', () => {
         closePrintChoiceModal();
-        document.body.classList.add('hide-measurements-on-print');
-        window.print();
-        // Remove class after print dialog closes
-        setTimeout(() => {
-            document.body.classList.remove('hide-measurements-on-print');
-        }, 1000);
+        if (!currentViewingId) return;
+        const record = records.find(r => r.id === currentViewingId);
+        if (!record) return;
+        printRecordSlip(record, false);
     });
 
     modalPaidBtn.addEventListener('click', () => {
@@ -759,7 +777,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ---------- PDF bill (light pastel colours only — showcase quality) ----------
-    function buildBillElement(record) {
+    function buildBillElement(record, withMeasurements = false) {
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
         const isPaid = isBalanceCleared(record.balance);
         const parts = record.particulars || [];
@@ -772,13 +790,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td class="pb-c pb-count-val">${escapeHTML(String(p.count || '-'))}</td>
                 </tr>`).join('') + `
                 <tr class="pb-sum">
-                    <td colspan="2" style="text-align:right; font-weight:700;">Total Particulars Count:</td>
+                    <td colspan="2" class="pb-sum-label">TOTAL PARTICULARS COUNT &nbsp;:</td>
                     <td class="pb-c pb-sum-val">${particularsTotal(record)}</td>
                 </tr>`
             : `<tr><td colspan="3" class="pb-empty">No particulars recorded</td></tr>`;
 
+        const measurementsHtml = withMeasurements ? `
+            <div class="pb-measurements-section">
+                <div class="pb-section-header">
+                    <span class="pb-sec-icon">📏</span>
+                    <span class="pb-sec-title">Garments &amp; Measurements</span>
+                    <span class="pb-sec-badge">Master Job Card</span>
+                </div>
+                <div class="pb-meas-grid">
+                    <div class="pb-meas-box pb-box-shirt">
+                        <div class="pb-meas-title">👔 Shirt Measurements</div>
+                        <div class="pb-meas-content">${record.shirt ? escapeHTML(record.shirt) : '<em>No shirt measurements noted</em>'}</div>
+                    </div>
+                    <div class="pb-meas-box pb-box-pant">
+                        <div class="pb-meas-title">👖 Pant Measurements</div>
+                        <div class="pb-meas-content">${record.pant ? escapeHTML(record.pant) : '<em>No pant measurements noted</em>'}</div>
+                    </div>
+                    <div class="pb-meas-box pb-box-others">
+                        <div class="pb-meas-title">🧵 Others / Special Notes</div>
+                        <div class="pb-meas-content">${record.others ? escapeHTML(record.others) : '<em>No additional items or instructions</em>'}</div>
+                    </div>
+                </div>
+            </div>
+        ` : '';
+
+        const subtitleTag = withMeasurements
+            ? 'BESPOKE TAILORS &bull; MASTER JOB CARD WITH MEASUREMENTS'
+            : 'BESPOKE TAILORS &bull; PREMIUM STITCHING &bull; OFFICIAL ORDER SLIP';
+
         const wrap = document.createElement('div');
-        wrap.className = 'pdf-bill';
+        wrap.className = 'pdf-bill' + (withMeasurements ? ' with-measurements-bill' : '');
         wrap.innerHTML = `
             <div class="pb-card">
                 <!-- Shop Header Banner -->
@@ -790,7 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="pb-brand-prefix">Suresh's</div>
                     <div class="pb-brand-main">Youth Style Stitch Wear</div>
-                    <div class="pb-tag">BESPOKE TAILORS &bull; PREMIUM STITCHING &bull; OFFICIAL ORDER SLIP</div>
+                    <div class="pb-tag">${subtitleTag}</div>
                 </div>
 
                 <!-- Metadata 4-Box Grid (Light Pastels) -->
@@ -814,19 +860,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
 
+                ${measurementsHtml}
+
                 <!-- Particulars Section -->
                 <div class="pb-section-header">
                     <span class="pb-sec-icon">🧾</span>
                     <span class="pb-sec-title">Particulars &amp; Work Details</span>
-                    <span class="pb-sec-badge">Total Items: ${particularsTotal(record)}</span>
+                    <span class="pb-sec-badge">Total Items &nbsp;: &nbsp;<strong>${particularsTotal(record)}</strong></span>
                 </div>
 
                 <table class="pb-table">
                     <thead>
                         <tr>
-                            <th style="width:60px; text-align:center;">#</th>
+                            <th style="width:65px; text-align:center;">#</th>
                             <th>Particular Item Description</th>
-                            <th style="width:120px; text-align:center;">Count</th>
+                            <th style="width:130px; text-align:center;">Count</th>
                         </tr>
                     </thead>
                     <tbody>${rowsHtml}</tbody>
@@ -859,12 +907,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return wrap;
     }
 
-    async function generateBillPdf(record) {
+    async function generateBillPdf(record, withMeasurements = false) {
         if (!window.html2canvas || !window.jspdf) {
             throw new Error('PDF libraries could not be loaded. Please check your internet connection and reload.');
         }
 
-        const bill = buildBillElement(record);
+        const bill = buildBillElement(record, withMeasurements);
         document.body.appendChild(bill);
 
         try {
@@ -898,7 +946,8 @@ document.addEventListener('DOMContentLoaded', () => {
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, (canvas.height * pdfWidth) / canvas.width);
 
             const safeSerial = String(record.orderId).replace(/[^a-z0-9_-]+/gi, '-');
-            return { blob: pdf.output('blob'), fileName: `Youth-Style-Bill-${safeSerial}.pdf` };
+            const suffix = withMeasurements ? 'JobCard' : 'Bill';
+            return { blob: pdf.output('blob'), fileName: `Youth-Style-${suffix}-${safeSerial}.pdf` };
         } finally {
             bill.remove();
         }
