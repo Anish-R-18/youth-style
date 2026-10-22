@@ -1,0 +1,11 @@
+{
+  "name": "tailor-manager",
+  "version": "1.0.0",
+  "description": "Tailor management local website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx --yes serve -l 3000"
+  },
+  "author": "",
+  "license": "ISC"
+}
