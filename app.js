@@ -64,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const printWithoutMeasurementsBtn = document.getElementById('print-without-measurements-btn');
     const printCancelBtn = document.getElementById('print-cancel-btn');
 
+    // Particulars & PDF elements
+    const particularsList = document.getElementById('particulars-list');
+    const addParticularBtn = document.getElementById('add-particular-btn');
+    const particularsTotalEl = document.getElementById('particulars-total');
+    const modalPdfBtn = document.getElementById('modal-pdf-btn');
+
     let currentViewingId = null;
     let editingOrderId = null;
     let pendingDeleteRecord = null;
@@ -78,6 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
         phone: r.phone || '',
         orderId: r.orderId || '',
         deliveryDate: r.deliveryDate || '',
+        bookedDate: r.bookedDate || '',
+        particulars: Array.isArray(r.particulars) ? r.particulars : [],
         shirt: r.shirt || '',
         pant: r.pant || '',
         others: r.others || '',
@@ -101,7 +109,75 @@ document.addEventListener('DOMContentLoaded', () => {
     totalAmountInput.addEventListener('input', autoCalcBalance);
     addAmountInput.addEventListener('input', autoCalcBalance);
 
+    // ---- Particulars: dynamic rows of (item text + count) ----
+    function addParticularRow(item = '', count = '') {
+        const row = document.createElement('div');
+        row.className = 'particular-row';
+        row.innerHTML = `
+            <input type="text" class="particular-item" placeholder="e.g. Shirt stitching" value="${escapeHTML(String(item))}" aria-label="Particular">
+            <input type="number" class="particular-count" min="0" inputmode="numeric" placeholder="Count" value="${escapeHTML(String(count))}" aria-label="Count">
+            <button type="button" class="particular-remove" aria-label="Remove particular">&times;</button>
+        `;
+        particularsList.appendChild(row);
+    }
+
+    function getParticulars() {
+        return Array.from(particularsList.querySelectorAll('.particular-row'))
+            .map(row => ({
+                item: row.querySelector('.particular-item').value.trim(),
+                count: row.querySelector('.particular-count').value.trim()
+            }))
+            .filter(p => p.item || p.count);
+    }
+
+    function setParticulars(list) {
+        particularsList.innerHTML = '';
+        const items = Array.isArray(list) && list.length ? list : [{ item: '', count: '' }];
+        items.forEach(p => addParticularRow(p.item, p.count));
+        updateParticularsTotal();
+    }
+
+    function updateParticularsTotal() {
+        const total = getParticulars().reduce((sum, p) => sum + parseNumeric(p.count), 0);
+        particularsTotalEl.textContent = total;
+    }
+
+    particularsList.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.particular-remove');
+        if (!removeBtn) return;
+        const row = removeBtn.closest('.particular-row');
+        if (particularsList.querySelectorAll('.particular-row').length <= 1) {
+            // Keep one empty row instead of removing the last one
+            row.querySelector('.particular-item').value = '';
+            row.querySelector('.particular-count').value = '';
+        } else {
+            row.remove();
+        }
+        updateParticularsTotal();
+    });
+    particularsList.addEventListener('input', updateParticularsTotal);
+
+    addParticularBtn.addEventListener('click', () => {
+        addParticularRow();
+        const inputs = particularsList.querySelectorAll('.particular-item');
+        inputs[inputs.length - 1].focus();
+    });
+
+    function todayISO() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 10);
+    }
+
+    // Clears the form, restores one empty particular row and defaults Booked Date to today
+    function resetFormFields() {
+        form.reset();
+        setParticulars([]);
+        document.getElementById('bookedDate').value = todayISO();
+    }
+
     // Initial render
+    resetFormFields();
     updateStats();
     renderAllViews();
 
@@ -155,6 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const phone = document.getElementById('phone').value.trim();
         const orderId = document.getElementById('orderId').value.trim();
         const deliveryDate = document.getElementById('deliveryDate').value;
+        const bookedDate = document.getElementById('bookedDate').value;
+        const particulars = getParticulars();
         const shirt = document.getElementById('shirt').value.trim();
         const pant = document.getElementById('pant').value.trim();
         const others = document.getElementById('others').value.trim();
@@ -176,6 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         phone,
                         orderId,
                         deliveryDate,
+                        bookedDate,
+                        particulars,
                         shirt,
                         pant,
                         others,
@@ -192,6 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     phone,
                     orderId,
                     deliveryDate,
+                    bookedDate,
+                    particulars,
                     shirt,
                     pant,
                     others,
@@ -201,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     date: new Date().toLocaleDateString()
                 };
                 records.unshift(newRecord);
-                form.reset();
+                resetFormFields();
             }
 
             saveRecords();
@@ -231,6 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('phone').value = record.phone;
         document.getElementById('orderId').value = record.orderId;
         document.getElementById('deliveryDate').value = record.deliveryDate || '';
+        document.getElementById('bookedDate').value = record.bookedDate || '';
+        setParticulars(record.particulars);
         document.getElementById('shirt').value = record.shirt || '';
         document.getElementById('pant').value = record.pant || '';
         document.getElementById('others').value = record.others || '';
@@ -240,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         submitBtnText.textContent = 'Update Order';
         tabNewText.textContent = 'Editing...';
-        formHeading.textContent = `✏️ Edit Order #${record.orderId}`;
+        formHeading.textContent = `✏️ Edit Serial No. ${record.orderId}`;
         formSubheading.textContent = `Updating measurements for ${record.name}`;
         cancelEditBtn.classList.remove('hidden');
 
@@ -252,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetEditState() {
         editingOrderId = null;
-        form.reset();
+        resetFormFields();
         submitBtnText.textContent = 'Save Order';
         tabNewText.textContent = 'New Order';
         formHeading.textContent = '✂️ New Order / Job Card';
@@ -297,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 (r.shirt && r.shirt.toLowerCase().includes(query)) ||
                 (r.pant && r.pant.toLowerCase().includes(query)) ||
                 (r.others && r.others.toLowerCase().includes(query)) ||
+                (Array.isArray(r.particulars) && r.particulars.some(p => (p.item || '').toLowerCase().includes(query))) ||
                 (r.balance && r.balance.toLowerCase().includes(query)) ||
                 (r.totalAmount && r.totalAmount.toLowerCase().includes(query))
             );
@@ -340,9 +425,9 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteConfirmationStep = 1;
 
         deleteStepTitle.textContent = '⚠️ Confirm Deletion (1/2)';
-        deleteStepDesc.textContent = `Are you sure you want to delete order #${record.orderId}?`;
+        deleteStepDesc.textContent = `Are you sure you want to delete serial no. ${record.orderId}?`;
         deleteOrderPreview.innerHTML = `
-            <strong>Order #${escapeHTML(record.orderId)}</strong> &bull; ${escapeHTML(record.name)}<br>
+            <strong>Serial No. ${escapeHTML(record.orderId)}</strong> &bull; ${escapeHTML(record.name)}<br>
             <span style="color:var(--text-muted);font-size:0.8rem;">Phone: ${escapeHTML(record.phone)} | Balance: ₹${escapeHTML(record.balance || '0')}</span>
         `;
 
@@ -358,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (deleteConfirmationStep === 1) {
             deleteConfirmationStep = 2;
             deleteStepTitle.textContent = '🚨 Final Confirmation (2/2)';
-            deleteStepDesc.textContent = `PERMANENT: Delete order #${pendingDeleteRecord.orderId} for "${pendingDeleteRecord.name}" permanently?`;
+            deleteStepDesc.textContent = `PERMANENT: Delete serial no. ${pendingDeleteRecord.orderId} for "${pendingDeleteRecord.name}" permanently?`;
             confirmDeleteBtn.textContent = 'Permanently Delete Now';
             confirmDeleteBtn.className = 'btn-danger-solid stage-2';
         } else if (deleteConfirmationStep === 2) {
@@ -439,6 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     phone: r.phone || '',
                     orderId: r.orderId || 'ORD',
                     deliveryDate: r.deliveryDate || '',
+                    bookedDate: r.bookedDate || '',
+                    particulars: Array.isArray(r.particulars) ? r.particulars : [],
                     shirt: r.shirt || '',
                     pant: r.pant || '',
                     others: r.others || '',
@@ -579,30 +666,219 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // WhatsApp Direct Share for Tailor Slips
-    modalWhatsappBtn.addEventListener('click', () => {
-        if (!currentViewingId) return;
-        const record = records.find(r => r.id === currentViewingId);
-        if (!record) return;
-
+    // ---------- WhatsApp message (text only — measurements are NOT included) ----------
+    function buildWhatsAppText(record) {
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
-        const text = `*Suresh's Youth Style Stitch Wear* ✂️
-Order #: ${record.orderId}
-Customer: ${record.name}
-${record.deliveryDate ? `Delivery Date: ${formatDate(record.deliveryDate)}` : ''}
+        const lines = [];
+        lines.push(`*Suresh's Youth Style Stitch Wear* ✂️`);
+        lines.push(`Serial No.: ${record.orderId}`);
+        lines.push(`Customer Name: ${record.name}`);
+        if (record.bookedDate) lines.push(`Booked Date: ${formatDate(record.bookedDate, true)}`);
+        if (record.deliveryDate) lines.push(`Delivery Date: ${formatDate(record.deliveryDate, true)}`);
 
-*Payment Details:*
-• Total Amount: ₹${totalDisplay}
-• Advance Paid: ₹${record.addAmount || '0'}
-• Balance Due: ₹${record.balance || '0'}
+        const parts = record.particulars || [];
+        if (parts.length) {
+            lines.push('', '*Particulars:*');
+            parts.forEach(p => {
+                lines.push(`• ${p.item || '-'}${p.count ? ` × ${p.count}` : ''}`);
+            });
+            lines.push(`Total Count: ${particularsTotal(record)}`);
+        }
 
-Thank you for visiting Suresh's Youth Style Stitch Wear!`;
+        lines.push(
+            '',
+            '*Payment Details:*',
+            `• Total Amount: ₹${totalDisplay}`,
+            `• Advance Paid: ₹${record.addAmount || '0'}`,
+            `• Balance Due: ₹${record.balance || '0'}`,
+            '',
+            `Thank you for visiting Suresh's Youth Style Stitch Wear!`
+        );
+        return lines.join('\n');
+    }
 
-        const cleanPhone = record.phone.replace(/[^0-9]/g, '');
+    function openWhatsAppChat(record, text) {
+        const cleanPhone = (record.phone || '').replace(/[^0-9]/g, '');
         const waUrl = cleanPhone.length >= 10
             ? `https://wa.me/91${cleanPhone.slice(-10)}?text=${encodeURIComponent(text)}`
             : `https://wa.me/?text=${encodeURIComponent(text)}`;
         window.open(waUrl, '_blank');
+    }
+
+    modalWhatsappBtn.addEventListener('click', () => {
+        if (!currentViewingId) return;
+        const record = records.find(r => r.id === currentViewingId);
+        if (!record) return;
+        openWhatsAppChat(record, buildWhatsAppText(record));
+    });
+
+    // ---------- PDF bill (light pastel colours, customer copy — no measurements) ----------
+    function buildBillElement(record) {
+        const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
+        const isPaid = isBalanceCleared(record.balance);
+        const parts = record.particulars || [];
+
+        const rowsHtml = parts.length
+            ? parts.map((p, i) => `
+                <tr>
+                    <td class="pb-c">${i + 1}</td>
+                    <td>${escapeHTML(p.item) || '-'}</td>
+                    <td class="pb-c">${escapeHTML(String(p.count || '-'))}</td>
+                </tr>`).join('') + `
+                <tr class="pb-sum">
+                    <td></td>
+                    <td>Total Count</td>
+                    <td class="pb-c">${particularsTotal(record)}</td>
+                </tr>`
+            : `<tr><td colspan="3" style="text-align:center;color:#94a3b8;">No particulars noted</td></tr>`;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'pdf-bill';
+        wrap.innerHTML = `
+            <div class="pb-header">
+                <div class="pb-brand-prefix">Suresh's</div>
+                <div class="pb-brand-main">Youth Style Stitch Wear</div>
+                <div class="pb-tag">Tailoring Bill • Order Receipt</div>
+            </div>
+
+            <div class="pb-meta">
+                <div class="pb-meta-box pb-c1">
+                    <span class="pb-meta-label">Serial No.</span>
+                    <span class="pb-meta-val">${escapeHTML(record.orderId)}</span>
+                </div>
+                <div class="pb-meta-box pb-c2">
+                    <span class="pb-meta-label">Customer Name</span>
+                    <span class="pb-meta-val">${escapeHTML(record.name)}</span>
+                </div>
+                <div class="pb-meta-box pb-c3">
+                    <span class="pb-meta-label">Booked Date</span>
+                    <span class="pb-meta-val">${record.bookedDate ? formatDate(record.bookedDate, true) : '-'}</span>
+                </div>
+                <div class="pb-meta-box pb-c4">
+                    <span class="pb-meta-label">Delivery Date</span>
+                    <span class="pb-meta-val">${record.deliveryDate ? formatDate(record.deliveryDate, true) : '-'}</span>
+                </div>
+            </div>
+
+            <div class="pb-section-title">Particulars</div>
+            <table class="pb-table">
+                <thead>
+                    <tr><th style="width:60px;text-align:center;">#</th><th>Particular</th><th style="width:110px;text-align:center;">Count</th></tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+
+            <div class="pb-totals">
+                <div class="pb-total-box pb-box-total">
+                    <span class="pb-t-label">Total Amount</span>
+                    <span class="pb-t-val">₹${escapeHTML(totalDisplay)}</span>
+                </div>
+                <div class="pb-total-box pb-box-adv">
+                    <span class="pb-t-label">Advance Paid</span>
+                    <span class="pb-t-val">₹${escapeHTML(record.addAmount || '0')}</span>
+                </div>
+                <div class="pb-total-box pb-box-bal ${isPaid ? 'pb-paid' : ''}">
+                    <span class="pb-t-label">${isPaid ? 'Balance' : 'Balance Due'}</span>
+                    <span class="pb-t-val">${isPaid ? 'Paid ✓' : `₹${escapeHTML(record.balance)}`}</span>
+                </div>
+            </div>
+
+            <div class="pb-footer">Thank you for visiting Suresh's Youth Style Stitch Wear!</div>
+        `;
+        return wrap;
+    }
+
+    async function generateBillPdf(record) {
+        if (!window.html2canvas || !window.jspdf) {
+            throw new Error('PDF libraries could not be loaded. Please check your internet connection and reload.');
+        }
+
+        const bill = buildBillElement(record);
+        document.body.appendChild(bill);
+
+        try {
+            // Make sure the brush + President fonts are ready before the bill is drawn
+            if (document.fonts && document.fonts.load) {
+                await Promise.all([
+                    document.fonts.load("46px 'Alex Brush'"),
+                    document.fonts.load("36px 'President'")
+                ]).catch(() => {});
+            }
+
+            const canvas = await window.html2canvas(bill, {
+                scale: 2,
+                backgroundColor: '#fffdf8',
+                useCORS: true,
+                onclone: (clonedDoc) => {
+                    const el = clonedDoc.querySelector('.pdf-bill');
+                    if (el) {
+                        el.style.position = 'static';
+                        el.style.left = '0';
+                    }
+                }
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const pdfWidth = 210; // mm (A4 width)
+            const imgHeight = Math.max((canvas.height * pdfWidth) / canvas.width, 211);
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: [pdfWidth, imgHeight] });
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, (canvas.height * pdfWidth) / canvas.width);
+
+            const safeSerial = String(record.orderId).replace(/[^a-z0-9_-]+/gi, '-');
+            return { blob: pdf.output('blob'), fileName: `Youth-Style-Bill-${safeSerial}.pdf` };
+        } finally {
+            bill.remove();
+        }
+    }
+
+    function downloadBlob(blob, fileName) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    // Send PDF on WhatsApp: share sheet on phones, download + chat fallback elsewhere
+    modalPdfBtn.addEventListener('click', async () => {
+        if (!currentViewingId) return;
+        const record = records.find(r => r.id === currentViewingId);
+        if (!record) return;
+
+        const originalHtml = modalPdfBtn.innerHTML;
+        modalPdfBtn.disabled = true;
+        modalPdfBtn.innerHTML = '<span>⏳ Preparing PDF...</span>';
+
+        try {
+            const { blob, fileName } = await generateBillPdf(record);
+            const file = new File([blob], fileName, { type: 'application/pdf' });
+            const text = buildWhatsAppText(record);
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file], title: fileName, text });
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return; // user closed the share sheet
+                }
+            }
+
+            // Fallback (desktop browsers): save the PDF and open the WhatsApp chat
+            downloadBlob(blob, fileName);
+            openWhatsAppChat(record, text);
+            alert('PDF downloaded. WhatsApp is opening — please attach the downloaded PDF to the chat.');
+        } catch (err) {
+            console.error(err);
+            alert(err && err.message ? err.message : 'Could not create the PDF. Please try again.');
+        } finally {
+            modalPdfBtn.disabled = false;
+            modalPdfBtn.innerHTML = originalHtml;
+        }
     });
 
     function openModal(id) {
@@ -610,8 +886,8 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
         if (!record) return;
 
         currentViewingId = id;
-        modalOrderId.textContent = `Order Slip #${record.orderId}`;
-        modalCustomerInfo.textContent = `${record.name} | Phone: ${record.phone} | Created: ${record.date}`;
+        modalOrderId.textContent = `Slip • Serial No. ${record.orderId}`;
+        modalCustomerInfo.textContent = `Customer Name: ${record.name} | Phone: ${record.phone} | Created: ${record.date}`;
 
         const isPaid = isBalanceCleared(record.balance);
         modalPaidBtn.style.display = isPaid ? 'none' : 'inline-flex';
@@ -641,8 +917,12 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
                     </span>
                 </div>
                 <div class="slip-detail-item">
+                    <span class="slip-label">Booked Date</span>
+                    <span class="slip-val">${record.bookedDate ? formatDate(record.bookedDate, true) : 'Not specified'}</span>
+                </div>
+                <div class="slip-detail-item">
                     <span class="slip-label">Delivery Date</span>
-                    <span class="slip-val">${record.deliveryDate ? formatDate(record.deliveryDate) : 'Not specified'}</span>
+                    <span class="slip-val">${record.deliveryDate ? formatDate(record.deliveryDate, true) : 'Not specified'}</span>
                 </div>
                 <div class="slip-detail-item" style="grid-column: 1 / -1;">
                     <span class="slip-label">Customer Contact</span>
@@ -651,6 +931,19 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
                             📞 Call ${escapeHTML(record.phone)}
                         </a>
                     </span>
+                </div>
+            </div>
+
+            <div class="particulars-card">
+                <div class="measurement-card-title">🧾 Particulars <span class="particulars-count-chip">Total Count: ${particularsTotal(record)}</span></div>
+                <div class="particulars-lines">
+                    ${(record.particulars && record.particulars.length)
+                        ? record.particulars.map(p => `
+                            <div class="particular-line">
+                                <span>${escapeHTML(p.item) || '-'}</span>
+                                <strong>× ${escapeHTML(String(p.count || '-'))}</strong>
+                            </div>`).join('')
+                        : '<em style="color:var(--text-dim);">No particulars noted</em>'}
                 </div>
             </div>
 
@@ -700,7 +993,7 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
         if (data.length === 0) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="8" class="empty-state">No matching orders found.</td>
+                    <td colspan="9" class="empty-state">No matching orders found.</td>
                 </tr>
             `;
             return;
@@ -718,6 +1011,7 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
             if (record.shirt) chips += `<span class="chip chip-shirt">Shirt</span>`;
             if (record.pant) chips += `<span class="chip chip-pant">Pant</span>`;
             if (record.others) chips += `<span class="chip chip-others">Others</span>`;
+            if (particularsTotal(record)) chips += `<span class="chip chip-part">Particulars: ${particularsTotal(record)}</span>`;
             if (!chips) chips = `<span style="color:var(--text-dim);font-size:0.75rem;">None</span>`;
 
             row.innerHTML = `
@@ -728,6 +1022,7 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
                         <a href="tel:${escapeHTML(record.phone)}" class="customer-phone" style="text-decoration:none;">${escapeHTML(record.phone)}</a>
                     </div>
                 </td>
+                <td><span style="font-size:0.82rem; color:var(--text-muted);">${record.bookedDate ? formatDate(record.bookedDate) : '-'}</span></td>
                 <td><span style="font-size:0.82rem; color:var(--text-muted);">${record.deliveryDate ? formatDate(record.deliveryDate) : '-'}</span></td>
                 <td><span class="total-pill">₹ ${escapeHTML(totalDisplay)}</span></td>
                 <td><strong>₹ ${record.addAmount ? escapeHTML(record.addAmount) : '0'}</strong></td>
@@ -771,12 +1066,13 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
             if (record.shirt) chips += `<span class="chip chip-shirt">Shirt</span>`;
             if (record.pant) chips += `<span class="chip chip-pant">Pant</span>`;
             if (record.others) chips += `<span class="chip chip-others">Others</span>`;
+            if (particularsTotal(record)) chips += `<span class="chip chip-part">Particulars: ${particularsTotal(record)}</span>`;
 
             card.innerHTML = `
                 <div class="card-top">
-                    <span class="card-order-num">#${escapeHTML(record.orderId)}</span>
+                    <span class="card-order-num">S.No. ${escapeHTML(record.orderId)}</span>
                     <span class="card-delivery-badge">
-                        📅 ${record.deliveryDate ? formatDate(record.deliveryDate) : 'No date'}
+                        📅 Booked: ${record.bookedDate ? formatDate(record.bookedDate) : '-'} &nbsp;•&nbsp; 🚚 Delivery: ${record.deliveryDate ? formatDate(record.deliveryDate) : '-'}
                     </span>
                 </div>
 
@@ -824,6 +1120,13 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
         });
     }
 
+    // Total of all particular counts (falls back to number of items when no counts are given)
+    function particularsTotal(record) {
+        const list = Array.isArray(record.particulars) ? record.particulars : [];
+        const sum = list.reduce((s, p) => s + parseNumeric(p.count), 0);
+        return sum || list.length;
+    }
+
     function computeTotal(adv, bal) {
         const advNum = parseNumeric(adv);
         const balNum = parseNumeric(bal);
@@ -846,12 +1149,14 @@ Thank you for visiting Suresh's Youth Style Stitch Wear!`;
         return parseNumeric(trimmed) === 0;
     }
 
-    function formatDate(dateStr) {
+    function formatDate(dateStr, withYear = false) {
         try {
             const parts = dateStr.split('-');
             if (parts.length === 3) {
                 const d = new Date(parts[0], parts[1] - 1, parts[2]);
-                return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                return d.toLocaleDateString(undefined, withYear
+                    ? { day: 'numeric', month: 'short', year: 'numeric' }
+                    : { month: 'short', day: 'numeric' });
             }
             return dateStr;
         } catch (e) {

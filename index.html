@@ -86,7 +86,7 @@
                 <!-- Search Bar -->
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="search" placeholder="Search name, phone, order #, or measurements..." autocomplete="off">
+                    <input type="text" id="search" placeholder="Search name, phone, serial no., particulars or measurements..." autocomplete="off">
                     <button type="button" id="clear-search-btn" class="clear-btn hidden" aria-label="Clear search">&times;</button>
                 </div>
 
@@ -100,8 +100,9 @@
                     <table id="records-table">
                         <thead>
                             <tr>
-                                <th>Order #</th>
-                                <th>Customer</th>
+                                <th>Serial No.</th>
+                                <th>Customer Name</th>
+                                <th>Booked</th>
                                 <th>Delivery</th>
                                 <th>Total (₹)</th>
                                 <th>Advance (₹)</th>
@@ -144,13 +145,17 @@
                         </div>
                         <div class="form-grid-2">
                             <div class="form-group">
-                                <label for="orderId">Order / Slip # <span class="req">*</span></label>
-                                <input type="text" id="orderId" required placeholder="e.g. 101 or ORD-101">
+                                <label for="orderId">Serial Number <span class="req">*</span></label>
+                                <input type="text" id="orderId" required placeholder="e.g. 101">
                             </div>
                             <div class="form-group">
-                                <label for="deliveryDate">Delivery Date</label>
-                                <input type="date" id="deliveryDate">
+                                <label for="bookedDate">Booked Date</label>
+                                <input type="date" id="bookedDate">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryDate">Delivery Date</label>
+                            <input type="date" id="deliveryDate">
                         </div>
                     </div>
 
@@ -183,6 +188,19 @@
                                 <span class="field-hint">Kurta, Coat, Alterations...</span>
                             </div>
                             <textarea id="others" rows="2" placeholder="e.g. Kurta: 42, Chudidar, White linen fabric, Urgent for Saturday"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Particulars: item text + count rows (sent in WhatsApp message & PDF) -->
+                    <div class="form-fieldset">
+                        <div class="fieldset-header">
+                            <legend class="fieldset-title">🧾 Particulars</legend>
+                            <span class="fieldset-hint">Item &amp; count — sent in WhatsApp &amp; PDF</span>
+                        </div>
+                        <div id="particulars-list" class="particulars-list"></div>
+                        <div class="particulars-footer">
+                            <button type="button" class="btn-add-particular" id="add-particular-btn">➕ Add Particular</button>
+                            <span class="particulars-total">Total Count: <strong id="particulars-total">0</strong></span>
                         </div>
                     </div>
 
@@ -239,7 +257,10 @@
 
                 <div class="modal-footer">
                     <button type="button" id="modal-whatsapp-btn" class="btn-whatsapp">
-                        <span>💬 WhatsApp</span>
+                        <span>💬 WhatsApp Message</span>
+                    </button>
+                    <button type="button" id="modal-pdf-btn" class="btn-pdf">
+                        <span>📄 Send PDF</span>
                     </button>
                     <button type="button" id="modal-print-btn" class="btn-secondary">
                         <span>🖨️ Print / PDF</span>
@@ -315,6 +336,9 @@
             </div>
         </div>
     </div>
+    <!-- PDF generation (bill is rendered to an image, then placed into a PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

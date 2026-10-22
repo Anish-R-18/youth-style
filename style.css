@@ -1202,6 +1202,332 @@ input:focus, textarea:focus {
     to { transform: translateY(0); }
 }
 
+/* ===== Particulars (item + count rows) ===== */
+.particulars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.particular-row {
+    display: grid;
+    grid-template-columns: 1fr 96px 42px;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.particular-remove {
+    width: 42px;
+    height: 44px;
+    border-radius: 0.6rem;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: transparent;
+    color: var(--danger-color);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.particular-remove:hover {
+    background: var(--danger-color);
+    color: #fff;
+}
+
+.particulars-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+}
+
+.btn-add-particular {
+    padding: 0.55rem 0.9rem;
+    min-height: 40px;
+    border-radius: 0.6rem;
+    background: rgba(59, 130, 246, 0.14);
+    border: 1px dashed rgba(59, 130, 246, 0.55);
+    color: #93c5fd;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn-add-particular:hover {
+    background: rgba(59, 130, 246, 0.28);
+}
+
+.particulars-total {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.particulars-total strong {
+    color: #38bdf8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+}
+
+.chip-part {
+    background: rgba(20, 184, 166, 0.15);
+    color: #5eead4;
+    border: 1px solid rgba(20, 184, 166, 0.35);
+}
+
+.card-top {
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+}
+
+/* Particulars card inside the slip modal */
+.particulars-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 0.85rem 1rem;
+}
+
+.particulars-count-chip {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #5eead4;
+    background: rgba(20, 184, 166, 0.15);
+    border: 1px solid rgba(20, 184, 166, 0.35);
+    padding: 0.1rem 0.5rem;
+    border-radius: 9999px;
+}
+
+.particulars-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    background: rgba(2, 6, 23, 0.45);
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.particular-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.9rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.particular-line:last-child {
+    border-bottom: none;
+}
+
+.particular-line strong {
+    font-family: 'JetBrains Mono', monospace;
+    color: #93c5fd;
+}
+
+/* Send PDF button */
+.btn-pdf {
+    padding: 0.75rem 1.1rem;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    border: 1px solid rgba(167, 139, 250, 0.6);
+    border-radius: 0.65rem;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.btn-pdf:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* ===== PDF bill (rendered off-screen, then captured into the PDF) — light pastel colours ===== */
+.pdf-bill {
+    position: fixed;
+    left: -10000px;
+    top: 0;
+    width: 794px;
+    min-height: 900px;
+    padding: 40px 44px;
+    background: #fffdf8;
+    color: #334155;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+}
+
+.pdf-bill .pb-header {
+    text-align: center;
+    padding: 22px 16px 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #eef2ff 0%, #fdf2f8 55%, #fffbeb 100%);
+    border: 1px solid #e0e7ff;
+}
+
+.pdf-bill .pb-brand-prefix {
+    font-family: 'Alex Brush', cursive;
+    font-size: 46px;
+    line-height: 1.1;
+    color: #be185d;
+}
+
+.pdf-bill .pb-brand-main {
+    font-family: 'President', cursive;
+    font-size: 36px;
+    line-height: 1.25;
+    color: #4338ca;
+}
+
+.pdf-bill .pb-tag {
+    margin-top: 8px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.pdf-bill .pb-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.pdf-bill .pb-meta-box {
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.pdf-bill .pb-c1 { background: #eff6ff; border-color: #dbeafe; }
+.pdf-bill .pb-c2 { background: #fdf2f8; border-color: #fce7f3; }
+.pdf-bill .pb-c3 { background: #f0fdf4; border-color: #dcfce7; }
+.pdf-bill .pb-c4 { background: #fffbeb; border-color: #fef3c7; }
+
+.pdf-bill .pb-meta-label {
+    display: block;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.pdf-bill .pb-meta-val {
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.pdf-bill .pb-section-title {
+    margin: 26px 0 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6d28d9;
+}
+
+.pdf-bill .pb-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #e9d5ff;
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 15px;
+    text-align: left;
+}
+
+.pdf-bill .pb-table th {
+    background: #f5f3ff;
+    color: #6d28d9;
+    padding: 11px 14px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e9d5ff;
+}
+
+.pdf-bill .pb-table td {
+    padding: 11px 14px;
+    background: #ffffff;
+    border-bottom: 1px solid #f3e8ff;
+    color: #1e293b;
+}
+
+.pdf-bill .pb-table tbody tr:nth-child(even) td {
+    background: #fdfaff;
+}
+
+.pdf-bill .pb-table .pb-c {
+    text-align: center;
+    font-weight: 700;
+}
+
+.pdf-bill .pb-table .pb-sum td {
+    background: #f5f3ff;
+    color: #6d28d9;
+    font-weight: 800;
+    border-bottom: none;
+}
+
+.pdf-bill .pb-totals {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.pdf-bill .pb-total-box {
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.pdf-bill .pb-t-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+}
+
+.pdf-bill .pb-t-val {
+    display: block;
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.pdf-bill .pb-box-total { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+.pdf-bill .pb-box-adv { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.pdf-bill .pb-box-bal { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.pdf-bill .pb-box-bal.pb-paid { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+
+.pdf-bill .pb-footer {
+    margin-top: 30px;
+    padding-top: 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+    border-top: 2px dashed #e2e8f0;
+}
+
+@media (max-width: 480px) {
+    .particular-row {
+        grid-template-columns: 1fr 80px 42px;
+    }
+}
+
 /* Print Styles */
 @media print {
     body * {
@@ -1233,9 +1559,21 @@ input:focus, textarea:focus {
         color: black !important;
         border: 1px solid #cbd5e1 !important;
     }
-    .measurement-card {
+    .measurement-card, .particulars-card {
         background: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
+    }
+    .particulars-lines {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    .particular-line, .particular-line strong {
+        color: #0f172a !important;
+    }
+    .particulars-count-chip {
+        color: #0f766e !important;
+        background: #ccfbf1 !important;
+        border-color: #99f6e4 !important;
     }
     .measurement-card-title {
         color: #1e293b !important;
