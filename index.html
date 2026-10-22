@@ -2,131 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tailor Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1120">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Youth Style">
+    <meta name="description" content="Youth Style - Smart tailoring job cards, measurements & balance tracker">
+    <title>Youth Style - Tailor Manager</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="glass-panel">
-            <div class="header-content">
-                <div>
-                    <h1>Tailor Manager</h1>
-                    <p>Smart tailoring job cards, measurements & balance tracker</p>
-                </div>
-                <div class="stats-summary">
-                    <div class="stat-pill">
-                        <span class="stat-label">Total Orders</span>
-                        <span id="stat-total-orders" class="stat-value">0</span>
+    <div class="app-layout">
+        <!-- Top App Bar (Mobile & Desktop) -->
+        <header class="app-header glass-panel">
+            <div class="header-main">
+                <div class="brand">
+                    <span class="brand-icon">✂️</span>
+                    <div>
+                        <h1 class="brand-title">Youth Style</h1>
+                        <p class="brand-subtitle">Tailor Job Cards & Accounts</p>
                     </div>
-                    <div class="stat-pill stat-pending">
-                        <span class="stat-label">Total Balance Due</span>
-                        <span id="stat-total-balance" class="stat-value">₹0</span>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="stat-badge-label">Orders</span>
+                        <span id="stat-total-orders" class="stat-badge-val">0</span>
+                    </div>
+                    <div class="stat-badge stat-balance-badge">
+                        <span class="stat-badge-label">Due</span>
+                        <span id="stat-total-balance" class="stat-badge-val">₹0</span>
                     </div>
                 </div>
             </div>
+
+            <!-- Mobile Navigation Tab Bar -->
+            <nav class="mobile-tabs" aria-label="Main Navigation">
+                <button type="button" class="tab-btn active" id="tab-orders-btn" data-target="orders-view">
+                    <span class="tab-icon">📋</span>
+                    <span class="tab-text">Orders</span>
+                    <span class="tab-count" id="tab-orders-count">0</span>
+                </button>
+                <button type="button" class="tab-btn" id="tab-new-btn" data-target="new-order-view">
+                    <span class="tab-icon">➕</span>
+                    <span class="tab-text" id="tab-new-text">New Order</span>
+                </button>
+            </nav>
         </header>
 
-        <main>
-            <!-- Order Form Section -->
-            <section class="form-section glass-panel">
-                <h2>✂️ New Order / Job Card</h2>
-                <form id="order-form">
-                    <!-- Customer Information -->
-                    <div class="form-fieldset">
-                        <legend class="fieldset-title">👤 Customer Info</legend>
-                        <div class="form-row">
-                            <div class="form-group flex-1">
-                                <label for="name">Customer Name *</label>
-                                <input type="text" id="name" required placeholder="e.g. Ramesh Kumar">
-                            </div>
-                            <div class="form-group flex-1">
-                                <label for="phone">Phone Number *</label>
-                                <input type="tel" id="phone" required placeholder="e.g. 9876543210">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group flex-1">
-                                <label for="orderId">Order / Slip # *</label>
-                                <input type="text" id="orderId" required placeholder="e.g. ORD-101">
-                            </div>
-                            <div class="form-group flex-1">
-                                <label for="deliveryDate">Delivery Date</label>
-                                <input type="date" id="deliveryDate">
-                            </div>
-                        </div>
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- VIEW 1: Orders View (Table on Desktop, Cards on Mobile) -->
+            <section id="orders-view" class="view-panel active glass-panel">
+                <div class="panel-header">
+                    <div class="title-with-badge">
+                        <h2>Order Slips</h2>
+                        <span class="counter-chip" id="visible-orders-count">0</span>
                     </div>
-
-                    <!-- Garment Measurements & Notes -->
-                    <div class="form-fieldset">
-                        <legend class="fieldset-title">📏 Garment Measurements (Write Anything)</legend>
-                        
-                        <div class="form-group">
-                            <div class="field-header">
-                                <label for="shirt">👔 Shirt</label>
-                                <span class="field-hint">Length, Chest, Shoulder, Sleeve, Neck, Style...</span>
-                            </div>
-                            <textarea id="shirt" rows="3" placeholder="e.g. Length: 29, Chest: 40, Shoulder: 18, Sleeve: 24, Collar: 15.5, Spread collar, Double cuff"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="field-header">
-                                <label for="pant">👖 Pant</label>
-                                <span class="field-hint">Length, Waist, Hip, Thigh, Bottom, Inseam...</span>
-                            </div>
-                            <textarea id="pant" rows="3" placeholder="e.g. Length: 40, Waist: 34, Hip: 41, Thigh: 24, Bottom: 15, Cross pocket, Single pleat"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="field-header">
-                                <label for="others">🧵 Others / Special Notes</label>
-                                <span class="field-hint">Kurta, Coat, Alterations, Fabric code, Urgent...</span>
-                            </div>
-                            <textarea id="others" rows="2" placeholder="e.g. Kurta: 42 len, Chudidar, White linen fabric, Urgent delivery by Friday morning"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Payment Section -->
-                    <div class="form-fieldset">
-                        <legend class="fieldset-title">💰 Payment & Balance</legend>
-                        <div class="form-row">
-                            <div class="form-group flex-1">
-                                <label for="addAmount">Add / Advance (₹)</label>
-                                <input type="text" id="addAmount" placeholder="e.g. 500">
-                            </div>
-                            <div class="form-group flex-1">
-                                <label for="balance">Balance Due (₹)</label>
-                                <input type="text" id="balance" placeholder="e.g. 350 or 0">
-                            </div>
-                            <div class="form-group flex-1">
-                                <label for="totalAmount">Total Amount (₹)</label>
-                                <input type="text" id="totalAmount" placeholder="Advance + Balance">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-actions-row">
-                        <button type="submit" class="btn-primary" id="submit-btn">
-                            <span class="btn-icon">➕</span> <span id="submit-btn-text">Save Order</span>
-                        </button>
-                        <button type="button" class="btn-secondary hidden" id="cancel-edit-btn">
-                            Cancel Edit
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Data & Records Section -->
-            <section class="data-section glass-panel">
-                <div class="data-header">
-                    <h2>📋 Orders & Measurements</h2>
-                    <div class="search-container">
-                        <input type="text" id="search" placeholder="Search by name, phone, order #, or measurement notes...">
+                    <!-- Quick Filters -->
+                    <div class="filter-pills">
+                        <button type="button" class="filter-pill active" data-filter="all">All</button>
+                        <button type="button" class="filter-pill" data-filter="pending">Balance Due</button>
+                        <button type="button" class="filter-pill" data-filter="paid">Paid</button>
                     </div>
                 </div>
-                
-                <div class="table-container">
+
+                <!-- Search Bar -->
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search" placeholder="Search name, phone, order #, or measurements..." autocomplete="off">
+                    <button type="button" id="clear-search-btn" class="clear-btn hidden" aria-label="Clear search">&times;</button>
+                </div>
+
+                <!-- Mobile Card List Container -->
+                <div class="mobile-card-list" id="mobile-cards-container">
+                    <!-- Populated dynamically by JS -->
+                </div>
+
+                <!-- Desktop Table Container -->
+                <div class="desktop-table-container">
                     <table id="records-table">
                         <thead>
                             <tr>
@@ -134,9 +90,9 @@
                                 <th>Customer</th>
                                 <th>Delivery</th>
                                 <th>Total (₹)</th>
-                                <th>Advance (Add)</th>
+                                <th>Advance (₹)</th>
                                 <th>Balance</th>
-                                <th>Measurements</th>
+                                <th>Items</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -146,33 +102,121 @@
                     </table>
                 </div>
             </section>
-        </main>
 
-        <!-- Double Confirm Delete Modal -->
-        <div id="delete-modal-backdrop" class="modal-backdrop hidden">
-            <div class="modal delete-modal glass-panel">
-                <div class="delete-modal-content">
-                    <div class="delete-icon">⚠️</div>
-                    <h3 id="delete-step-title">Delete Order?</h3>
-                    <p id="delete-step-desc" class="delete-desc">Are you sure you want to delete this order? This action cannot be undone.</p>
-                    <div class="delete-order-preview" id="delete-order-preview"></div>
-                    <div class="delete-modal-actions">
-                        <button id="cancel-delete-btn" class="btn-secondary">Cancel</button>
-                        <button id="confirm-delete-btn" class="btn-danger-solid">Delete Order</button>
+            <!-- VIEW 2: New / Edit Order Form View -->
+            <section id="new-order-view" class="view-panel glass-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 id="form-heading">✂️ New Order / Job Card</h2>
+                        <p class="panel-subtitle" id="form-subheading">Record customer measurements and payments</p>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Measurement Details / Job Card Modal -->
+                <form id="order-form" novalidate>
+                    <!-- Customer Information -->
+                    <div class="form-fieldset">
+                        <legend class="fieldset-title">👤 Customer Details</legend>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="name">Customer Name <span class="req">*</span></label>
+                                <input type="text" id="name" required placeholder="e.g. Ramesh Kumar" autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number <span class="req">*</span></label>
+                                <div class="input-with-action">
+                                    <input type="tel" id="phone" required placeholder="10-digit mobile number" inputmode="tel" autocomplete="tel">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="orderId">Order / Slip # <span class="req">*</span></label>
+                                <input type="text" id="orderId" required placeholder="e.g. 101 or ORD-101">
+                            </div>
+                            <div class="form-group">
+                                <label for="deliveryDate">Delivery Date</label>
+                                <input type="date" id="deliveryDate">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Garment Measurements & Notes -->
+                    <div class="form-fieldset">
+                        <div class="fieldset-header">
+                            <legend class="fieldset-title">📏 Garments & Measurements</legend>
+                            <span class="fieldset-hint">Free text note pad</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="field-header">
+                                <label for="shirt">👔 Shirt</label>
+                                <span class="field-hint">Len, Chest, Shld, Slv, Col...</span>
+                            </div>
+                            <textarea id="shirt" rows="3" placeholder="e.g. Length: 29, Chest: 40, Shoulder: 18, Sleeve: 24, Collar: 15.5, Double Cuff"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="field-header">
+                                <label for="pant">👖 Pant</label>
+                                <span class="field-hint">Len, Waist, Hip, Thigh, Bottom...</span>
+                            </div>
+                            <textarea id="pant" rows="3" placeholder="e.g. Length: 40, Waist: 34, Hip: 41, Thigh: 24, Bottom: 15, Cross pocket"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="field-header">
+                                <label for="others">🧵 Others / Special Notes</label>
+                                <span class="field-hint">Kurta, Coat, Alterations...</span>
+                            </div>
+                            <textarea id="others" rows="2" placeholder="e.g. Kurta: 42, Chudidar, White linen fabric, Urgent for Saturday"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Payment Section -->
+                    <div class="form-fieldset">
+                        <legend class="fieldset-title">💰 Payment & Billing</legend>
+                        <div class="form-grid-3">
+                            <div class="form-group">
+                                <label for="addAmount">Advance / Add (₹)</label>
+                                <input type="number" id="addAmount" placeholder="e.g. 500" inputmode="decimal">
+                            </div>
+                            <div class="form-group">
+                                <label for="balance">Balance Due (₹)</label>
+                                <input type="number" id="balance" placeholder="e.g. 300" inputmode="decimal">
+                            </div>
+                            <div class="form-group">
+                                <label for="totalAmount">Total Amount (₹)</label>
+                                <input type="number" id="totalAmount" placeholder="Adv + Bal" inputmode="decimal">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-row">
+                        <button type="submit" class="btn-primary" id="submit-btn">
+                            <span class="btn-icon">💾</span> <span id="submit-btn-text">Save Order</span>
+                        </button>
+                        <button type="button" class="btn-secondary hidden" id="cancel-edit-btn">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <!-- Floating Action Button for Mobile Quick Add -->
+        <button type="button" class="fab-btn" id="fab-add-order" aria-label="Create New Order">
+            <span class="fab-icon">➕</span>
+        </button>
+
+        <!-- Bottom Sheet / Measurement Slip Modal -->
         <div id="modal-backdrop" class="modal-backdrop hidden">
-            <div class="modal glass-panel">
+            <div class="modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="modal-order-id">
                 <div class="modal-header">
                     <div>
-                        <h2 id="modal-order-id">Order Details</h2>
+                        <h2 id="modal-order-id">Order Slip</h2>
                         <p id="modal-customer-info" class="text-muted"></p>
                     </div>
-                    <button id="modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+                    <button type="button" id="modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
                 </div>
                 
                 <div class="modal-body" id="modal-content">
@@ -180,8 +224,31 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button id="modal-print-btn" class="btn-secondary">🖨️ Print Slip</button>
-                    <button id="modal-paid-btn" class="btn-success">✔️ Mark Balance Paid</button>
+                    <button type="button" id="modal-whatsapp-btn" class="btn-whatsapp">
+                        <span>💬 WhatsApp</span>
+                    </button>
+                    <button type="button" id="modal-print-btn" class="btn-secondary">
+                        <span>🖨️ Print Slip</span>
+                    </button>
+                    <button type="button" id="modal-paid-btn" class="btn-success">
+                        <span>✔️ Mark Paid</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Double Confirm Delete Bottom Sheet Modal -->
+        <div id="delete-modal-backdrop" class="modal-backdrop hidden">
+            <div class="modal delete-modal glass-panel" role="alertdialog">
+                <div class="delete-modal-content">
+                    <div class="delete-icon">⚠️</div>
+                    <h3 id="delete-step-title">Delete Order?</h3>
+                    <p id="delete-step-desc" class="delete-desc">Are you sure you want to delete this order? This action cannot be undone.</p>
+                    <div class="delete-order-preview" id="delete-order-preview"></div>
+                    <div class="delete-modal-actions">
+                        <button type="button" id="cancel-delete-btn" class="btn-secondary">Cancel</button>
+                        <button type="button" id="confirm-delete-btn" class="btn-danger-solid">Delete Order</button>
+                    </div>
                 </div>
             </div>
         </div>
