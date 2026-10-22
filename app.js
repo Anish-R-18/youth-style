@@ -64,13 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const printWithoutMeasurementsBtn = document.getElementById('print-without-measurements-btn');
     const printCancelBtn = document.getElementById('print-cancel-btn');
 
-    // Particulars & PDF elements
+    // Particulars elements
     const particularsList = document.getElementById('particulars-list');
     const addParticularBtn = document.getElementById('add-particular-btn');
     const particularsTotalEl = document.getElementById('particulars-total');
-    const modalPdfBtn = document.getElementById('modal-pdf-btn');
+
+    // WhatsApp 3-Choice Modal elements
+    const whatsappChoiceBackdrop = document.getElementById('whatsapp-choice-backdrop');
+    const waChoicePdfBtn = document.getElementById('wa-choice-pdf-btn');
+    const waChoiceSmsBtn = document.getElementById('wa-choice-sms-btn');
+    const waChoiceCancelBtn = document.getElementById('wa-choice-cancel-btn');
+    const waModalSubtitle = document.getElementById('wa-modal-subtitle');
 
     let currentViewingId = null;
+    let activeWhatsAppRecord = null;
     let editingOrderId = null;
     let pendingDeleteRecord = null;
     let pendingImportRecords = null;
@@ -324,8 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         submitBtnText.textContent = 'Update Order';
         tabNewText.textContent = 'Editing...';
-        formHeading.textContent = `✏️ Edit Serial No. ${record.orderId}`;
-        formSubheading.textContent = `Updating measurements for ${record.name}`;
+        formHeading.textContent = `✏️ Edit Serial Number ${record.orderId}`;
+        formSubheading.textContent = `Updating customer details for ${record.name}`;
         cancelEditBtn.classList.remove('hidden');
 
         // Switch to form tab and scroll
@@ -401,11 +408,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Click delegation for actions on both table and mobile cards
     function handleActionClick(e) {
         const viewBtn = e.target.closest('.btn-view');
+        const waBtn = e.target.closest('.btn-whatsapp-action');
         const editBtn = e.target.closest('.btn-edit');
         const deleteBtn = e.target.closest('.btn-danger');
 
         if (viewBtn) {
             openModal(viewBtn.dataset.id);
+        } else if (waBtn) {
+            const record = records.find(r => r.id === waBtn.dataset.id);
+            if (record) openWhatsAppChoiceModal(record);
         } else if (editBtn) {
             startEdit(editBtn.dataset.id);
         } else if (deleteBtn) {
@@ -425,9 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteConfirmationStep = 1;
 
         deleteStepTitle.textContent = '⚠️ Confirm Deletion (1/2)';
-        deleteStepDesc.textContent = `Are you sure you want to delete serial no. ${record.orderId}?`;
+        deleteStepDesc.textContent = `Are you sure you want to delete Serial Number ${record.orderId}?`;
         deleteOrderPreview.innerHTML = `
-            <strong>Serial No. ${escapeHTML(record.orderId)}</strong> &bull; ${escapeHTML(record.name)}<br>
+            <strong>Serial Number: ${escapeHTML(record.orderId)}</strong> &bull; Customer Name: ${escapeHTML(record.name)}<br>
             <span style="color:var(--text-muted);font-size:0.8rem;">Phone: ${escapeHTML(record.phone)} | Balance: ₹${escapeHTML(record.balance || '0')}</span>
         `;
 
@@ -443,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (deleteConfirmationStep === 1) {
             deleteConfirmationStep = 2;
             deleteStepTitle.textContent = '🚨 Final Confirmation (2/2)';
-            deleteStepDesc.textContent = `PERMANENT: Delete serial no. ${pendingDeleteRecord.orderId} for "${pendingDeleteRecord.name}" permanently?`;
+            deleteStepDesc.textContent = `PERMANENT: Delete Serial Number ${pendingDeleteRecord.orderId} for "${pendingDeleteRecord.name}" permanently?`;
             confirmDeleteBtn.textContent = 'Permanently Delete Now';
             confirmDeleteBtn.className = 'btn-danger-solid stage-2';
         } else if (deleteConfirmationStep === 2) {
@@ -671,26 +682,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
         const lines = [];
         lines.push(`*Suresh's Youth Style Stitch Wear* ✂️`);
-        lines.push(`Serial No.: ${record.orderId}`);
-        lines.push(`Customer Name: ${record.name}`);
-        if (record.bookedDate) lines.push(`Booked Date: ${formatDate(record.bookedDate, true)}`);
-        if (record.deliveryDate) lines.push(`Delivery Date: ${formatDate(record.deliveryDate, true)}`);
+        lines.push(`*Serial Number:* ${record.orderId}`);
+        lines.push(`*Customer Name:* ${record.name}`);
+        if (record.bookedDate) lines.push(`*Booked Date:* ${formatDate(record.bookedDate, true)}`);
+        if (record.deliveryDate) lines.push(`*Delivery Date:* ${formatDate(record.deliveryDate, true)}`);
 
         const parts = record.particulars || [];
         if (parts.length) {
             lines.push('', '*Particulars:*');
-            parts.forEach(p => {
-                lines.push(`• ${p.item || '-'}${p.count ? ` × ${p.count}` : ''}`);
+            parts.forEach((p, idx) => {
+                const countStr = p.count ? ` (Count: ${p.count})` : '';
+                lines.push(`${idx + 1}. ${p.item || '-'}${countStr}`);
             });
-            lines.push(`Total Count: ${particularsTotal(record)}`);
+            lines.push(`*Total Items Count:* ${particularsTotal(record)}`);
         }
 
+        const isPaid = isBalanceCleared(record.balance);
         lines.push(
             '',
-            '*Payment Details:*',
+            '*Billing Details:*',
             `• Total Amount: ₹${totalDisplay}`,
             `• Advance Paid: ₹${record.addAmount || '0'}`,
-            `• Balance Due: ₹${record.balance || '0'}`,
+            `• Balance Due: ${isPaid ? '✓ Paid in Full' : `₹${record.balance || '0'}`}`,
             '',
             `Thank you for visiting Suresh's Youth Style Stitch Wear!`
         );
@@ -705,14 +718,45 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(waUrl, '_blank');
     }
 
+    // ---------- WhatsApp 3-Choice Modal (Send PDF, Send SMS, Cancel) ----------
+    function openWhatsAppChoiceModal(record) {
+        activeWhatsAppRecord = record;
+        waModalSubtitle.textContent = `Serial Number: ${record.orderId} • Customer Name: ${record.name}`;
+        whatsappChoiceBackdrop.classList.remove('hidden');
+    }
+
+    function closeWhatsAppChoiceModal() {
+        whatsappChoiceBackdrop.classList.add('hidden');
+        activeWhatsAppRecord = null;
+    }
+
+    waChoiceCancelBtn.addEventListener('click', closeWhatsAppChoiceModal);
+    whatsappChoiceBackdrop.addEventListener('click', (e) => {
+        if (e.target === whatsappChoiceBackdrop) closeWhatsAppChoiceModal();
+    });
+
+    waChoiceSmsBtn.addEventListener('click', () => {
+        if (!activeWhatsAppRecord) return;
+        const record = activeWhatsAppRecord;
+        closeWhatsAppChoiceModal();
+        openWhatsAppChat(record, buildWhatsAppText(record));
+    });
+
+    waChoicePdfBtn.addEventListener('click', async () => {
+        if (!activeWhatsAppRecord) return;
+        const record = activeWhatsAppRecord;
+        closeWhatsAppChoiceModal();
+        await sendWhatsAppPdf(record);
+    });
+
     modalWhatsappBtn.addEventListener('click', () => {
         if (!currentViewingId) return;
         const record = records.find(r => r.id === currentViewingId);
         if (!record) return;
-        openWhatsAppChat(record, buildWhatsAppText(record));
+        openWhatsAppChoiceModal(record);
     });
 
-    // ---------- PDF bill (light pastel colours, customer copy — no measurements) ----------
+    // ---------- PDF bill (light pastel colours only — showcase quality) ----------
     function buildBillElement(record) {
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
         const isPaid = isBalanceCleared(record.balance);
@@ -722,68 +766,93 @@ document.addEventListener('DOMContentLoaded', () => {
             ? parts.map((p, i) => `
                 <tr>
                     <td class="pb-c">${i + 1}</td>
-                    <td>${escapeHTML(p.item) || '-'}</td>
-                    <td class="pb-c">${escapeHTML(String(p.count || '-'))}</td>
+                    <td class="pb-item-name">${escapeHTML(p.item) || '-'}</td>
+                    <td class="pb-c pb-count-val">${escapeHTML(String(p.count || '-'))}</td>
                 </tr>`).join('') + `
                 <tr class="pb-sum">
-                    <td></td>
-                    <td>Total Count</td>
-                    <td class="pb-c">${particularsTotal(record)}</td>
+                    <td colspan="2" style="text-align:right; font-weight:700;">Total Particulars Count:</td>
+                    <td class="pb-c pb-sum-val">${particularsTotal(record)}</td>
                 </tr>`
-            : `<tr><td colspan="3" style="text-align:center;color:#94a3b8;">No particulars noted</td></tr>`;
+            : `<tr><td colspan="3" class="pb-empty">No particulars recorded</td></tr>`;
 
         const wrap = document.createElement('div');
         wrap.className = 'pdf-bill';
         wrap.innerHTML = `
-            <div class="pb-header">
-                <div class="pb-brand-prefix">Suresh's</div>
-                <div class="pb-brand-main">Youth Style Stitch Wear</div>
-                <div class="pb-tag">Tailoring Bill • Order Receipt</div>
+            <div class="pb-card">
+                <!-- Shop Header Banner -->
+                <div class="pb-header">
+                    <div class="pb-header-decor">
+                        <span class="pb-decor-line"></span>
+                        <span class="pb-decor-icon">✂️</span>
+                        <span class="pb-decor-line"></span>
+                    </div>
+                    <div class="pb-brand-prefix">Suresh's</div>
+                    <div class="pb-brand-main">Youth Style Stitch Wear</div>
+                    <div class="pb-tag">BESPOKE TAILORS &bull; PREMIUM STITCHING &bull; OFFICIAL ORDER SLIP</div>
+                </div>
+
+                <!-- Metadata 4-Box Grid (Light Pastels) -->
+                <div class="pb-meta">
+                    <div class="pb-meta-box pb-box-serial">
+                        <span class="pb-meta-label">Serial Number</span>
+                        <span class="pb-meta-val">${escapeHTML(record.orderId)}</span>
+                    </div>
+                    <div class="pb-meta-box pb-box-customer">
+                        <span class="pb-meta-label">Customer Name</span>
+                        <span class="pb-meta-val">${escapeHTML(record.name)}</span>
+                        ${record.phone ? `<span class="pb-meta-sub">📞 ${escapeHTML(record.phone)}</span>` : ''}
+                    </div>
+                    <div class="pb-meta-box pb-box-booked">
+                        <span class="pb-meta-label">Booked Date</span>
+                        <span class="pb-meta-val">${record.bookedDate ? formatDate(record.bookedDate, true) : 'Not Specified'}</span>
+                    </div>
+                    <div class="pb-meta-box pb-box-delivery">
+                        <span class="pb-meta-label">Delivery Date</span>
+                        <span class="pb-meta-val">${record.deliveryDate ? formatDate(record.deliveryDate, true) : 'Not Specified'}</span>
+                    </div>
+                </div>
+
+                <!-- Particulars Section -->
+                <div class="pb-section-header">
+                    <span class="pb-sec-icon">🧾</span>
+                    <span class="pb-sec-title">Particulars &amp; Work Details</span>
+                    <span class="pb-sec-badge">Total Items: ${particularsTotal(record)}</span>
+                </div>
+
+                <table class="pb-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px; text-align:center;">#</th>
+                            <th>Particular Item Description</th>
+                            <th style="width:120px; text-align:center;">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+
+                <!-- Financial Totals (3 Light Pastel Cards) -->
+                <div class="pb-totals">
+                    <div class="pb-total-box pb-box-total">
+                        <span class="pb-t-label">Total Amount</span>
+                        <span class="pb-t-val">₹${escapeHTML(totalDisplay)}</span>
+                    </div>
+                    <div class="pb-total-box pb-box-adv">
+                        <span class="pb-t-label">Advance Paid</span>
+                        <span class="pb-t-val">₹${escapeHTML(record.addAmount || '0')}</span>
+                    </div>
+                    <div class="pb-total-box pb-box-bal ${isPaid ? 'pb-paid' : ''}">
+                        <span class="pb-t-label">${isPaid ? 'Payment Status' : 'Balance Due'}</span>
+                        <span class="pb-t-val">${isPaid ? '✓ PAID' : `₹${escapeHTML(record.balance)}`}</span>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="pb-footer">
+                    <div class="pb-footer-badge">✓ Perfect Fit &bull; Quality Tailoring Guaranteed</div>
+                    <p class="pb-footer-msg">Thank you for visiting Suresh's Youth Style Stitch Wear!</p>
+                    <p class="pb-footer-note">Please bring this slip during delivery collection.</p>
+                </div>
             </div>
-
-            <div class="pb-meta">
-                <div class="pb-meta-box pb-c1">
-                    <span class="pb-meta-label">Serial No.</span>
-                    <span class="pb-meta-val">${escapeHTML(record.orderId)}</span>
-                </div>
-                <div class="pb-meta-box pb-c2">
-                    <span class="pb-meta-label">Customer Name</span>
-                    <span class="pb-meta-val">${escapeHTML(record.name)}</span>
-                </div>
-                <div class="pb-meta-box pb-c3">
-                    <span class="pb-meta-label">Booked Date</span>
-                    <span class="pb-meta-val">${record.bookedDate ? formatDate(record.bookedDate, true) : '-'}</span>
-                </div>
-                <div class="pb-meta-box pb-c4">
-                    <span class="pb-meta-label">Delivery Date</span>
-                    <span class="pb-meta-val">${record.deliveryDate ? formatDate(record.deliveryDate, true) : '-'}</span>
-                </div>
-            </div>
-
-            <div class="pb-section-title">Particulars</div>
-            <table class="pb-table">
-                <thead>
-                    <tr><th style="width:60px;text-align:center;">#</th><th>Particular</th><th style="width:110px;text-align:center;">Count</th></tr>
-                </thead>
-                <tbody>${rowsHtml}</tbody>
-            </table>
-
-            <div class="pb-totals">
-                <div class="pb-total-box pb-box-total">
-                    <span class="pb-t-label">Total Amount</span>
-                    <span class="pb-t-val">₹${escapeHTML(totalDisplay)}</span>
-                </div>
-                <div class="pb-total-box pb-box-adv">
-                    <span class="pb-t-label">Advance Paid</span>
-                    <span class="pb-t-val">₹${escapeHTML(record.addAmount || '0')}</span>
-                </div>
-                <div class="pb-total-box pb-box-bal ${isPaid ? 'pb-paid' : ''}">
-                    <span class="pb-t-label">${isPaid ? 'Balance' : 'Balance Due'}</span>
-                    <span class="pb-t-val">${isPaid ? 'Paid ✓' : `₹${escapeHTML(record.balance)}`}</span>
-                </div>
-            </div>
-
-            <div class="pb-footer">Thank you for visiting Suresh's Youth Style Stitch Wear!</div>
         `;
         return wrap;
     }
@@ -800,14 +869,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Make sure the brush + President fonts are ready before the bill is drawn
             if (document.fonts && document.fonts.load) {
                 await Promise.all([
-                    document.fonts.load("46px 'Alex Brush'"),
-                    document.fonts.load("36px 'President'")
+                    document.fonts.load("52px 'Alex Brush'"),
+                    document.fonts.load("40px 'President'")
                 ]).catch(() => {});
             }
 
             const canvas = await window.html2canvas(bill, {
                 scale: 2,
-                backgroundColor: '#fffdf8',
+                backgroundColor: '#ffffff',
                 useCORS: true,
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.querySelector('.pdf-bill');
@@ -844,15 +913,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => URL.revokeObjectURL(url), 2000);
     }
 
-    // Send PDF on WhatsApp: share sheet on phones, download + chat fallback elsewhere
-    modalPdfBtn.addEventListener('click', async () => {
-        if (!currentViewingId) return;
-        const record = records.find(r => r.id === currentViewingId);
-        if (!record) return;
-
-        const originalHtml = modalPdfBtn.innerHTML;
-        modalPdfBtn.disabled = true;
-        modalPdfBtn.innerHTML = '<span>⏳ Preparing PDF...</span>';
+    // Send PDF via WhatsApp: native share sheet on phones, download + chat fallback on desktop
+    async function sendWhatsAppPdf(record) {
+        const origHtml = modalWhatsappBtn.innerHTML;
+        modalWhatsappBtn.disabled = true;
+        modalWhatsappBtn.innerHTML = '<span>⏳ Preparing PDF...</span>';
 
         try {
             const { blob, fileName } = await generateBillPdf(record);
@@ -864,29 +929,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     await navigator.share({ files: [file], title: fileName, text });
                     return;
                 } catch (err) {
-                    if (err && err.name === 'AbortError') return; // user closed the share sheet
+                    if (err && err.name === 'AbortError') return; // User dismissed share sheet
                 }
             }
 
             // Fallback (desktop browsers): save the PDF and open the WhatsApp chat
             downloadBlob(blob, fileName);
             openWhatsAppChat(record, text);
-            alert('PDF downloaded. WhatsApp is opening — please attach the downloaded PDF to the chat.');
+            alert('PDF downloaded! WhatsApp is opening — please attach the downloaded PDF file to the chat.');
         } catch (err) {
             console.error(err);
             alert(err && err.message ? err.message : 'Could not create the PDF. Please try again.');
         } finally {
-            modalPdfBtn.disabled = false;
-            modalPdfBtn.innerHTML = originalHtml;
+            modalWhatsappBtn.disabled = false;
+            modalWhatsappBtn.innerHTML = origHtml;
         }
-    });
+    }
 
     function openModal(id) {
         const record = records.find(r => r.id === id);
         if (!record) return;
 
         currentViewingId = id;
-        modalOrderId.textContent = `Slip • Serial No. ${record.orderId}`;
+        modalOrderId.textContent = `Slip • Serial Number ${record.orderId}`;
         modalCustomerInfo.textContent = `Customer Name: ${record.name} | Phone: ${record.phone} | Created: ${record.date}`;
 
         const isPaid = isBalanceCleared(record.balance);
@@ -1031,6 +1096,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>
                     <div class="action-buttons">
                         <button type="button" class="btn-icon-sm btn-view" data-id="${record.id}" title="View Slip">👁️ Slip</button>
+                        <button type="button" class="btn-icon-sm btn-whatsapp-action" data-id="${record.id}" title="Share on WhatsApp" style="color:#25d366; border-color:rgba(37,211,102,0.35);">💬</button>
                         <button type="button" class="btn-icon-sm btn-edit" data-id="${record.id}" title="Edit Order">✏️</button>
                         <button type="button" class="btn-icon-sm btn-danger" data-id="${record.id}" title="Delete">🗑️</button>
                     </div>
@@ -1070,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.innerHTML = `
                 <div class="card-top">
-                    <span class="card-order-num">S.No. ${escapeHTML(record.orderId)}</span>
+                    <span class="card-order-num">Serial Number: ${escapeHTML(record.orderId)}</span>
                     <span class="card-delivery-badge">
                         📅 Booked: ${record.bookedDate ? formatDate(record.bookedDate) : '-'} &nbsp;•&nbsp; 🚚 Delivery: ${record.deliveryDate ? formatDate(record.deliveryDate) : '-'}
                     </span>
@@ -1078,6 +1144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="card-customer-row">
                     <div>
+                        <div class="card-customer-label" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dim); margin-bottom:2px;">Customer Name</div>
                         <div class="card-name">${escapeHTML(record.name)}</div>
                         <div class="card-items-preview" style="margin-top:0.25rem;">${chips}</div>
                     </div>
@@ -1106,6 +1173,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-actions">
                     <button type="button" class="btn-icon-sm btn-view" data-id="${record.id}">
                         👁️ View Slip
+                    </button>
+                    <button type="button" class="btn-icon-sm btn-whatsapp-action" data-id="${record.id}" style="color:#25d366; border-color:rgba(37,211,102,0.35);">
+                        💬 WhatsApp
                     </button>
                     <button type="button" class="btn-icon-sm btn-edit" data-id="${record.id}">
                         ✏️ Edit

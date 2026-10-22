@@ -86,7 +86,7 @@
                 <!-- Search Bar -->
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="search" placeholder="Search name, phone, serial no., particulars or measurements..." autocomplete="off">
+                    <input type="text" id="search" placeholder="Search Customer Name, phone, Serial Number, particulars or notes..." autocomplete="off">
                     <button type="button" id="clear-search-btn" class="clear-btn hidden" aria-label="Clear search">&times;</button>
                 </div>
 
@@ -100,10 +100,10 @@
                     <table id="records-table">
                         <thead>
                             <tr>
-                                <th>Serial No.</th>
+                                <th>Serial Number</th>
                                 <th>Customer Name</th>
-                                <th>Booked</th>
-                                <th>Delivery</th>
+                                <th>Booked Date</th>
+                                <th>Delivery Date</th>
                                 <th>Total (₹)</th>
                                 <th>Advance (₹)</th>
                                 <th>Balance</th>
@@ -245,7 +245,7 @@
             <div class="modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="modal-order-id">
                 <div class="modal-header">
                     <div>
-                        <h2 id="modal-order-id">Order Slip</h2>
+                        <h2 id="modal-order-id">Serial Number</h2>
                         <p id="modal-customer-info" class="text-muted"></p>
                     </div>
                     <button type="button" id="modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
@@ -257,10 +257,7 @@
 
                 <div class="modal-footer">
                     <button type="button" id="modal-whatsapp-btn" class="btn-whatsapp">
-                        <span>💬 WhatsApp Message</span>
-                    </button>
-                    <button type="button" id="modal-pdf-btn" class="btn-pdf">
-                        <span>📄 Send PDF</span>
+                        <span>💬 WhatsApp</span>
                     </button>
                     <button type="button" id="modal-print-btn" class="btn-secondary">
                         <span>🖨️ Print / PDF</span>
@@ -268,6 +265,46 @@
                     <button type="button" id="modal-paid-btn" class="btn-success">
                         <span>✔️ Mark Paid</span>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp 3-Choice Modal (Send PDF, Send SMS, Cancel) -->
+        <div id="whatsapp-choice-backdrop" class="modal-backdrop hidden">
+            <div class="modal wa-choice-modal glass-panel" role="dialog" aria-modal="true" aria-labelledby="wa-modal-title">
+                <div class="wa-modal-content">
+                    <div class="wa-modal-header">
+                        <div class="wa-modal-icon-badge">💬</div>
+                        <div>
+                            <h3 id="wa-modal-title">Share on WhatsApp</h3>
+                            <p class="wa-modal-subtitle" id="wa-modal-subtitle">Select how to send order details</p>
+                        </div>
+                    </div>
+                    <div class="wa-options-list">
+                        <button type="button" id="wa-choice-pdf-btn" class="wa-choice-card wa-choice-card-pdf">
+                            <div class="wa-card-icon">📄</div>
+                            <div class="wa-card-details">
+                                <div class="wa-card-title">Send PDF</div>
+                                <div class="wa-card-desc">Bespoke light-colored customer bill receipt</div>
+                            </div>
+                            <span class="wa-card-pill">PDF Bill</span>
+                        </button>
+                        <button type="button" id="wa-choice-sms-btn" class="wa-choice-card wa-choice-card-sms">
+                            <div class="wa-card-icon">💬</div>
+                            <div class="wa-card-details">
+                                <div class="wa-card-title">Send SMS</div>
+                                <div class="wa-card-desc">Quick text with bill &amp; particulars (no measurements)</div>
+                            </div>
+                            <span class="wa-card-pill">SMS Text</span>
+                        </button>
+                        <button type="button" id="wa-choice-cancel-btn" class="wa-choice-card wa-choice-card-cancel">
+                            <div class="wa-card-icon">✖️</div>
+                            <div class="wa-card-details">
+                                <div class="wa-card-title">Cancel</div>
+                                <div class="wa-card-desc">Close and stay on current slip</div>
+                            </div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
