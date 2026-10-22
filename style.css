@@ -227,6 +227,45 @@ body {
     border-radius: 9999px;
 }
 
+/* Tools & Backup Actions */
+.panel-tools {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.backup-actions {
+    display: flex;
+    gap: 0.45rem;
+}
+
+.btn-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-color);
+    color: #93c5fd;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.btn-tool:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: white;
+}
+
+.btn-tool:active {
+    transform: scale(0.97);
+}
+
 /* Filter Pills */
 .filter-pills {
     display: flex;

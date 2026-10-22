@@ -48,9 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteStepDesc = document.getElementById('delete-step-desc');
     const deleteOrderPreview = document.getElementById('delete-order-preview');
 
+    // Export & Import Backup elements
+    const exportBackupBtn = document.getElementById('export-backup-btn');
+    const importBackupFile = document.getElementById('import-backup-file');
+    const importModalBackdrop = document.getElementById('import-modal-backdrop');
+    const importSummaryText = document.getElementById('import-summary-text');
+    const importPreviewBox = document.getElementById('import-preview-box');
+    const importMergeBtn = document.getElementById('import-merge-btn');
+    const importReplaceBtn = document.getElementById('import-replace-btn');
+    const importCancelBtn = document.getElementById('import-cancel-btn');
+
     let currentViewingId = null;
     let editingOrderId = null;
     let pendingDeleteRecord = null;
+    let pendingImportRecords = null;
     let deleteConfirmationStep = 1;
     let currentFilter = 'all'; // 'all', 'pending', 'paid'
 
@@ -365,6 +376,141 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteConfirmationStep = 1;
     }
 
+    // Export Backup functionality (Downloads structured JSON file)
+    exportBackupBtn.addEventListener('click', () => {
+        if (records.length === 0) {
+            alert('No records to export yet. Add at least one order first.');
+            return;
+        }
+
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const fileName = `youth-style-backup-${dateStr}.json`;
+        const backupData = {
+            appName: 'Youth Style - Tailor Manager',
+            version: '1.0',
+            exportedAt: new Date().toISOString(),
+            recordCount: records.length,
+            records: records
+        };
+
+        const jsonString = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
+
+    // Import Backup functionality (Reads JSON and shows confirmation)
+    importBackupFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const parsed = JSON.parse(event.target.result);
+                let importedList = [];
+
+                if (Array.isArray(parsed)) {
+                    importedList = parsed;
+                } else if (parsed && Array.isArray(parsed.records)) {
+                    importedList = parsed.records;
+                } else {
+                    throw new Error('Invalid format: Could not find orders list.');
+                }
+
+                // Sanitize and normalize imported records
+                pendingImportRecords = importedList.map(r => ({
+                    id: r.id ? r.id.toString() : Date.now().toString() + Math.random().toString(36).substr(2, 4),
+                    name: r.name || 'Unnamed',
+                    phone: r.phone || '',
+                    orderId: r.orderId || 'ORD',
+                    deliveryDate: r.deliveryDate || '',
+                    shirt: r.shirt || '',
+                    pant: r.pant || '',
+                    others: r.others || '',
+                    addAmount: r.addAmount !== undefined ? r.addAmount : (r.advance || ''),
+                    balance: r.balance !== undefined ? r.balance : '',
+                    totalAmount: r.totalAmount !== undefined ? r.totalAmount : computeTotal(r.addAmount || r.advance, r.balance),
+                    date: r.date || new Date().toLocaleDateString()
+                }));
+
+                openImportModal(pendingImportRecords.length, file.name);
+            } catch (err) {
+                alert('Failed to read backup file. Please make sure it is a valid JSON backup file.');
+                console.error(err);
+            } finally {
+                importBackupFile.value = ''; // Reset file input so same file can be picked again
+            }
+        };
+
+        reader.readAsText(file);
+    });
+
+    function openImportModal(count, fileName) {
+        importSummaryText.textContent = `Found ${count} order(s) in "${fileName}".`;
+        importPreviewBox.innerHTML = `
+            <strong>File: ${escapeHTML(fileName)}</strong><br>
+            <span style="color:var(--text-muted); font-size:0.82rem;">
+                New Orders to Import: <strong>${count}</strong> | Current Orders: <strong>${records.length}</strong>
+            </span>
+        `;
+        importModalBackdrop.classList.remove('hidden');
+    }
+
+    function closeImportModal() {
+        importModalBackdrop.classList.add('hidden');
+        pendingImportRecords = null;
+    }
+
+    // Import Merge: Add new orders, updating matching orderIds or appending new
+    importMergeBtn.addEventListener('click', () => {
+        if (!pendingImportRecords) return;
+
+        const existingMap = new Map();
+        records.forEach(r => existingMap.set(r.id, r));
+
+        pendingImportRecords.forEach(r => {
+            // If an order with same ID or orderId exists, update it, else add
+            const existingById = records.findIndex(e => e.id === r.id);
+            if (existingById !== -1) {
+                records[existingById] = r;
+            } else {
+                records.unshift(r);
+            }
+        });
+
+        saveRecords();
+        updateStats();
+        renderAllViews();
+        closeImportModal();
+        alert(`Successfully merged backup records! Total orders: ${records.length}`);
+    });
+
+    // Import Replace: Overwrite current orders completely
+    importReplaceBtn.addEventListener('click', () => {
+        if (!pendingImportRecords) return;
+
+        if (confirm(`WARNING: This will replace all ${records.length} current order(s) with ${pendingImportRecords.length} order(s) from the backup file. Proceed?`)) {
+            records = pendingImportRecords;
+            saveRecords();
+            updateStats();
+            renderAllViews();
+            closeImportModal();
+            alert(`Successfully replaced records! Loaded ${records.length} orders.`);
+        }
+    });
+
+    importCancelBtn.addEventListener('click', closeImportModal);
+    importModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === importModalBackdrop) closeImportModal();
+    });
+
     // Modal Events
     modalClose.addEventListener('click', closeModal);
     modalBackdrop.addEventListener('click', (e) => {
@@ -374,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') {
             if (!modalBackdrop.classList.contains('hidden')) closeModal();
             if (!deleteModalBackdrop.classList.contains('hidden')) closeDeleteModal();
+            if (!importModalBackdrop.classList.contains('hidden')) closeImportModal();
         }
     });
 

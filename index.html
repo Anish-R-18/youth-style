@@ -61,11 +61,22 @@
                         <h2>Order Slips</h2>
                         <span class="counter-chip" id="visible-orders-count">0</span>
                     </div>
-                    <!-- Quick Filters -->
-                    <div class="filter-pills">
-                        <button type="button" class="filter-pill active" data-filter="all">All</button>
-                        <button type="button" class="filter-pill" data-filter="pending">Balance Due</button>
-                        <button type="button" class="filter-pill" data-filter="paid">Paid</button>
+                    <!-- Header Tools & Filters -->
+                    <div class="panel-tools">
+                        <div class="backup-actions">
+                            <button type="button" class="btn-tool" id="export-backup-btn" title="Export Backup JSON">
+                                <span>📥 Export Backup</span>
+                            </button>
+                            <label class="btn-tool" for="import-backup-file" title="Import Backup JSON">
+                                <span>📤 Import Backup</span>
+                                <input type="file" id="import-backup-file" accept=".json,application/json" class="hidden">
+                            </label>
+                        </div>
+                        <div class="filter-pills">
+                            <button type="button" class="filter-pill active" data-filter="all">All</button>
+                            <button type="button" class="filter-pill" data-filter="pending">Balance Due</button>
+                            <button type="button" class="filter-pill" data-filter="paid">Paid</button>
+                        </div>
                     </div>
                 </div>
 
@@ -233,6 +244,30 @@
                     <button type="button" id="modal-paid-btn" class="btn-success">
                         <span>✔️ Mark Paid</span>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Backup Confirmation Modal -->
+        <div id="import-modal-backdrop" class="modal-backdrop hidden">
+            <div class="modal delete-modal glass-panel" role="dialog" aria-modal="true">
+                <div class="delete-modal-content">
+                    <div class="delete-icon" style="color:#60a5fa;">📥</div>
+                    <h3>Import Backup</h3>
+                    <p class="delete-desc" id="import-summary-text">Ready to import records from your backup file.</p>
+                    <div class="delete-order-preview" id="import-preview-box"></div>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">How would you like to import these records?</p>
+                    <div class="delete-modal-actions" style="flex-direction:column; gap:0.6rem;">
+                        <button type="button" id="import-merge-btn" class="btn-primary" style="min-height:42px; font-size:0.92rem;">
+                            ➕ Merge with Existing Orders
+                        </button>
+                        <button type="button" id="import-replace-btn" class="btn-secondary" style="color:#f87171; border-color:rgba(239,68,68,0.4); min-height:42px; font-size:0.92rem;">
+                            ⚠️ Replace All Current Orders
+                        </button>
+                        <button type="button" id="import-cancel-btn" class="btn-secondary" style="min-height:40px; font-size:0.88rem;">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
