@@ -2100,3 +2100,22 @@ input:focus, textarea:focus {
 }
 .brand-prefix .suresh-brush-img { height: 2.2rem; }
 .pb-brand-prefix .suresh-brush-img { height: 3rem; }
+
+/* PDF: light shirt & pant background */
+.pdf-bill .pb-card,
+#print-stage .pb-card {
+    background-color: #fafbff !important;
+    background-image: url('assets/images/pdf-bg-shirt-pant.png') !important;
+    background-repeat: repeat !important;
+    background-size: 220px 220px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.pdf-bill .pb-tag { letter-spacing: 0.18em; font-weight: 700; }
+
+/* PDF: Customer Name = yellow, Balance Due = red */
+.pdf-bill .pb-box-customer { background: #fffbeb !important; border-color: #fde68a !important; }
+.pdf-bill .pb-box-customer .pb-meta-label { color: #b45309 !important; }
+.pdf-bill .pb-box-customer .pb-meta-val { color: #78350f !important; }
+.pdf-bill .pb-box-bal:not(.pb-paid) { background: #fff1f2 !important; color: #9f1239 !important; border-color: #fecdd3 !important; }
+.pdf-bill .pb-box-bal:not(.pb-paid) .pb-t-label { color: #e11d48 !important; }

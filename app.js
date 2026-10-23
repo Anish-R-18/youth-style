@@ -820,8 +820,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ` : '';
 
         const subtitleTag = withMeasurements
-            ? 'BESPOKE TAILORS &bull; MASTER JOB CARD WITH MEASUREMENTS'
-            : 'BESPOKE TAILORS &bull; PREMIUM STITCHING &bull; OFFICIAL ORDER SLIP';
+            ? 'PUNGANUR 517247'
+            : 'PUNGANUR 517247';
 
         const wrap = document.createElement('div');
         wrap.className = 'pdf-bill' + (withMeasurements ? ' with-measurements-bill' : '');
@@ -900,8 +900,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <!-- Footer -->
                 <div class="pb-footer">
-                    <div class="pb-footer-motto">✦ Every Stitch Tells Your Story ✦</div>
-                    <div class="pb-footer-tagline">Your Style. Your Confidence. Your Moment.</div>
+                    <div class="pb-footer-motto">God Make a Men.. Youth Style make a Gentle Men</div>
                     <p class="pb-footer-appreciation">“Thank you for choosing Suresh’s Youth Style Stitch Wear. We’re happy to be a part of your style journey!”</p>
                 </div>
             </div>
@@ -1084,8 +1083,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <div class="slip-bottom-signature">
-                <div class="slip-bottom-motto">✦ Every Stitch Tells Your Story ✦</div>
-                <div class="slip-bottom-tagline">Your Style. Your Confidence. Your Moment.</div>
+                <div class="slip-bottom-motto">God Make a Men.. Youth Style make a Gentle Men</div>
                 <p class="slip-bottom-appreciation">“Thank you for choosing Suresh’s Youth Style Stitch Wear. We’re happy to be a part of your style journey!”</p>
             </div>
         `;
