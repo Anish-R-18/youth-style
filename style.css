@@ -2169,3 +2169,37 @@ input:focus, textarea:focus {
     box-shadow: 0 0 0 1.5px #c7d2fe, 0 4px 12px rgba(99, 102, 241, 0.12);
     opacity: 0.88;
 }
+
+/* Print dialog: tick boxes for measurements / photo */
+.print-option-check {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-align: left;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    background: rgba(15, 23, 42, 0.55);
+    cursor: pointer;
+}
+.print-option-check:has(input:checked) {
+    border-color: #818cf8;
+    background: rgba(99, 102, 241, 0.18);
+}
+.print-option-check input {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    accent-color: #818cf8;
+    cursor: pointer;
+}
+.print-option-check strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #e0e7ff;
+}
+.print-option-check small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}

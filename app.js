@@ -60,8 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Print / PDF Choice Dialog elements
     const printChoiceBackdrop = document.getElementById('print-choice-backdrop');
-    const printWithMeasurementsBtn = document.getElementById('print-with-measurements-btn');
-    const printWithoutMeasurementsBtn = document.getElementById('print-without-measurements-btn');
+    const printIncludeMeasurements = document.getElementById('print-include-measurements');
+    const printIncludePhoto = document.getElementById('print-include-photo');
+    const printGoBtn = document.getElementById('print-go-btn');
     const printCancelBtn = document.getElementById('print-cancel-btn');
 
     // Particulars elements
@@ -637,6 +638,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function openPrintChoiceModal() {
+        printIncludeMeasurements.checked = false;
+        printIncludePhoto.checked = false;
         printChoiceBackdrop.classList.remove('hidden');
     }
 
@@ -649,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === printChoiceBackdrop) closePrintChoiceModal();
     });
 
-    function printRecordSlip(record, withMeasurements) {
+    function printRecordSlip(record, withMeasurements, withPhoto = false) {
         let stage = document.getElementById('print-stage');
         if (!stage) {
             stage = document.createElement('div');
@@ -659,7 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         stage.innerHTML = '';
-        const bill = buildBillElement(record, withMeasurements);
+        const bill = buildBillElement(record, withMeasurements, withPhoto);
         stage.appendChild(bill);
 
         setTimeout(() => {
@@ -667,20 +670,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150);
     }
 
-    printWithMeasurementsBtn.addEventListener('click', () => {
+    printGoBtn.addEventListener('click', () => {
         closePrintChoiceModal();
         if (!currentViewingId) return;
         const record = records.find(r => r.id === currentViewingId);
         if (!record) return;
-        printRecordSlip(record, true);
-    });
-
-    printWithoutMeasurementsBtn.addEventListener('click', () => {
-        closePrintChoiceModal();
-        if (!currentViewingId) return;
-        const record = records.find(r => r.id === currentViewingId);
-        if (!record) return;
-        printRecordSlip(record, false);
+        printRecordSlip(record, printIncludeMeasurements.checked, printIncludePhoto.checked);
     });
 
     modalPaidBtn.addEventListener('click', () => {
@@ -776,7 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ---------- PDF bill (light pastel colours only — showcase quality) ----------
-    function buildBillElement(record, withMeasurements = false) {
+    function buildBillElement(record, withMeasurements = false, withPhoto = false) {
         const totalDisplay = record.totalAmount || computeTotal(record.addAmount, record.balance);
         const isPaid = isBalanceCleared(record.balance);
         const parts = record.particulars || [];
@@ -829,7 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- Shop Header Banner -->
                 <div class="pb-header">
                     <div class="pb-phone"><img src="assets/images/whatsapp-icon.png" alt="WhatsApp" class="pb-phone-icon" style="width:28px;height:28px;"><span>99855 89968</span></div>
-                    <img src="assets/images/owner-photo.jpg" alt="Suresh" class="pb-owner-photo" style="width:96px;height:110px;">
+                    ${withPhoto ? '<img src="assets/images/owner-photo.jpg" alt="Suresh" class="pb-owner-photo" style="width:96px;height:110px;">' : ''}
                     <div class="pb-header-decor">
                         <span class="pb-decor-line"></span>
                         <span class="pb-decor-icon">✂️</span>

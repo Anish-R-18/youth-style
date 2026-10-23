@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="Youth Style">
     <meta name="description" content="Suresh's Youth Style Stitch Wear - Tailor Job Cards & Accounts">
     <title>Suresh's Youth Style Stitch Wear</title>
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -317,15 +317,24 @@
                 <div class="delete-modal-content">
                     <div class="delete-icon" style="color:#a78bfa;">🖨️</div>
                     <h3>Print / Save PDF Slip</h3>
-                    <p class="delete-desc" id="print-choice-desc">Select how you want to print or save the customer slip:</p>
+                    <p class="delete-desc" id="print-choice-desc">Tick what you want on the slip, then print or save:</p>
                     <div class="print-options-grid">
-                        <button type="button" id="print-with-measurements-btn" class="btn-primary" style="min-height:48px; font-size:0.95rem;">
-                            <span>📏 With Measurements</span>
-                            <small style="display:block; font-size:0.75rem; opacity:0.85; font-weight:normal;">Full Job Card (Tailor & Master copy)</small>
-                        </button>
-                        <button type="button" id="print-without-measurements-btn" class="btn-secondary" style="min-height:48px; font-size:0.95rem; border-color:rgba(99,102,241,0.4); color:#c7d2fe;">
-                            <span>🧾 Without Measurements</span>
-                            <small style="display:block; font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Bill & Balance Receipt only (Customer copy)</small>
+                        <label class="print-option-check">
+                            <input type="checkbox" id="print-include-measurements">
+                            <span>
+                                <strong>📏 Include Measurements</strong>
+                                <small>Shirt, pant &amp; special notes (Tailor / Master copy)</small>
+                            </span>
+                        </label>
+                        <label class="print-option-check">
+                            <input type="checkbox" id="print-include-photo">
+                            <span>
+                                <strong>🧑 Include Photo</strong>
+                                <small>Show the shop owner photo under the phone number</small>
+                            </span>
+                        </label>
+                        <button type="button" id="print-go-btn" class="btn-primary" style="min-height:48px; font-size:0.95rem;">
+                            <span>🖨️ Print / Save PDF</span>
                         </button>
                         <button type="button" id="print-cancel-btn" class="btn-secondary" style="min-height:42px; font-size:0.9rem;">
                             Cancel
@@ -381,6 +390,6 @@
     <!-- PDF generation (bill is rendered to an image, then placed into a PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js?v=14"></script>
+    <script src="app.js?v=15"></script>
 </body>
 </html>
