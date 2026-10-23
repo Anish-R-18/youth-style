@@ -2090,3 +2090,13 @@ input:focus, textarea:focus {
     background: none !important;
     -webkit-text-fill-color: #5a4ba3 !important;
 }
+
+/* Suresh's as an image of Brush Script so every device (phones too) shows it exactly */
+.suresh-brush-img {
+    height: 1.15em;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+.brand-prefix .suresh-brush-img { height: 2.2rem; }
+.pb-brand-prefix .suresh-brush-img { height: 3rem; }
