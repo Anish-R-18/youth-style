@@ -2119,3 +2119,29 @@ input:focus, textarea:focus {
 .pdf-bill .pb-box-customer .pb-meta-val { color: #78350f !important; }
 .pdf-bill .pb-box-bal:not(.pb-paid) { background: #fff1f2 !important; color: #9f1239 !important; border-color: #fecdd3 !important; }
 .pdf-bill .pb-box-bal:not(.pb-paid) .pb-t-label { color: #e11d48 !important; }
+
+/* PDF: address size + WhatsApp phone at top right */
+.pdf-bill .pb-tag {
+    font-size: 15px !important;
+    letter-spacing: 0.2em !important;
+    color: #475569 !important;
+    margin-top: 10px !important;
+}
+.pdf-bill .pb-card { position: relative; }
+.pdf-bill .pb-phone {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #15803d;
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    border-radius: 999px;
+    padding: 4px 12px 4px 6px;
+}
+.pdf-bill .pb-phone-icon { width: 20px; height: 20px; display: block; }
