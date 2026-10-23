@@ -826,9 +826,9 @@ document.addEventListener('DOMContentLoaded', () => {
         wrap.className = 'pdf-bill' + (withMeasurements ? ' with-measurements-bill' : '');
         wrap.innerHTML = `
             <div class="pb-card">
-                <div class="pb-phone"><img src="assets/images/whatsapp-icon.png" alt="WhatsApp" class="pb-phone-icon" style="width:20px;height:20px;"><span>99855 89968</span></div>
                 <!-- Shop Header Banner -->
                 <div class="pb-header">
+                    <div class="pb-phone"><img src="assets/images/whatsapp-icon.png" alt="WhatsApp" class="pb-phone-icon" style="width:28px;height:28px;"><span>99855 89968</span></div>
                     <div class="pb-header-decor">
                         <span class="pb-decor-line"></span>
                         <span class="pb-decor-icon">✂️</span>

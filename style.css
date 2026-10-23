@@ -2145,3 +2145,14 @@ input:focus, textarea:focus {
     padding: 4px 12px 4px 6px;
 }
 .pdf-bill .pb-phone-icon { width: 20px; height: 20px; display: block; }
+/* Phone inside the header box, larger text */
+.pdf-bill .pb-header { position: relative; }
+.pdf-bill .pb-phone {
+    top: 14px !important;
+    right: 16px !important;
+    font-size: 18px !important;
+    gap: 8px !important;
+    padding: 5px 14px 5px 6px !important;
+}
+.pdf-bill .pb-phone-icon { width: 28px !important; height: 28px !important; }
+.pdf-bill .pb-tag { font-size: 20px !important; letter-spacing: 0.16em !important; color: #334155 !important; }
