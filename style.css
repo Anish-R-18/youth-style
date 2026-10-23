@@ -2203,3 +2203,18 @@ input:focus, textarea:focus {
     font-size: 0.75rem;
     color: var(--text-muted);
 }
+
+/* PDF: "NO CREDIT" box under Balance Due */
+.pdf-bill .pb-no-credit {
+    grid-column: 3;
+    margin-top: -6px;
+    padding: 9px 10px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: #be123c;
+    background: #fff1f2;
+    border: 2px dashed #fb7185;
+    border-radius: 12px;
+}

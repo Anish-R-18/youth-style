@@ -892,6 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="pb-t-label">${isPaid ? 'Payment Status' : 'Balance Due'}</span>
                         <span class="pb-t-val">${isPaid ? '✓ PAID' : `₹${escapeHTML(record.balance)}`}</span>
                     </div>
+                    <div class="pb-no-credit">🚫 NO CREDIT</div>
                 </div>
 
                 <!-- Footer -->
