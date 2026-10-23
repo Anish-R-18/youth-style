@@ -723,8 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `• Advance Paid: ₹${record.addAmount || '0'}`,
             `• Balance Due: ${isPaid ? '✓ Paid in Full' : `₹${record.balance || '0'}`}`,
             '',
-            `✦ Every Stitch Tells Your Story ✦`,
-            `Your Style. Your Confidence. Your Moment.`,
+            `God Make a Men.. Youth Style make a Gentle Men`,
             `“Thank you for choosing Suresh’s Youth Style Stitch Wear. We’re happy to be a part of your style journey!”`
         );
         return lines.join('\n');
