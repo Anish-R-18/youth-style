@@ -823,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="pb-card">
                 <!-- Shop Header Banner -->
                 <div class="pb-header">
-                    <div class="pb-phone"><img src="assets/images/whatsapp-icon.png" alt="WhatsApp" class="pb-phone-icon" style="width:28px;height:28px;"><span>99855 89968</span></div>
+                    <div class="pb-phone"><img src="assets/images/whatsapp-logo.png" alt="WhatsApp" class="pb-phone-icon" style="width:28px;height:28px;"><span>99855 89968</span></div>
                     ${withPhoto ? '<img src="assets/images/owner-photo.jpg" alt="Suresh" class="pb-owner-photo" style="width:96px;height:110px;">' : ''}
                     <div class="pb-header-decor">
                         <span class="pb-decor-line"></span>
