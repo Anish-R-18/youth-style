@@ -2107,7 +2107,7 @@ input:focus, textarea:focus {
     background-color: #fafbff !important;
     background-image: url('assets/images/pdf-bg-shirt-pant.png') !important;
     background-repeat: repeat !important;
-    background-size: 220px 220px !important;
+    background-size: 460px 460px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
