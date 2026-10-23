@@ -835,7 +835,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="pb-decor-line"></span>
                     </div>
                     <div class="pb-brand-prefix">Suresh's</div>
-                    <div class="pb-brand-main">Youth Style Stitch Wear</div>
+                    <div class="pb-brand-main">
+                        <span class="brand-president-text pb-president-text"><span class="ys-line1">Youth Style</span><span class="ys-line2">Stitch Wear</span></span>
+                    </div>
                     <div class="pb-tag">${subtitleTag}</div>
                 </div>
 
@@ -1013,7 +1015,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modalContent.innerHTML = `
             <div class="slip-print-header" style="display:none;">
                 <span class="slip-print-title-prefix">Suresh's</span><br>
-                <span class="slip-print-title-main">Youth Style Stitch Wear</span>
+                <span class="slip-print-title-main">
+                    <span class="brand-president-text pb-president-text"><span class="ys-line1">Youth Style</span><span class="ys-line2">Stitch Wear</span></span>
+                </span>
                 <p style="font-size:0.75rem; color:#475569; margin-top:2px;">Tailoring Job Card & Bill Receipt</p>
             </div>
 
