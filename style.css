@@ -2073,3 +2073,20 @@ input:focus, textarea:focus {
     text-shadow: 0 0 0.5px #5b9bd5;
     font-size: 1.25em;
 }
+
+/* Suresh's — Brush Script (uses the copy installed on the device) */
+@font-face {
+    font-family: 'SureshBrush';
+    src: local('Brush Script MT Italic'), local('BrushScriptMT'), local('Brush Script MT'), local('Brush Script Std');
+}
+.brand-prefix,
+.pdf-bill .pb-brand-prefix,
+.pb-brand-prefix,
+.slip-print-title-prefix {
+    font-family: 'SureshBrush', 'Brush Script MT', 'Alex Brush', cursive !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    color: #5a4ba3 !important;
+    background: none !important;
+    -webkit-text-fill-color: #5a4ba3 !important;
+}

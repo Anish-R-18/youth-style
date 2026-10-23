@@ -922,6 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.fonts && document.fonts.load) {
                 await Promise.all([
                     document.fonts.load("52px 'Alex Brush'"),
+                    document.fonts.load("52px 'SureshBrush'"),
                     document.fonts.load("40px 'YouthStylePresident'")
                 ]).catch(() => {});
             }
